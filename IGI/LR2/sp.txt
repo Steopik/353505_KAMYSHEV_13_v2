@@ -1,0 +1,5 @@
+docker network create my_custom_bridge
+docker run -d --name my_container --network my_custom_bridge <image> sleep infinity
+docker network connect my_network my_container
+
+docker run -it <image_name> /bin/bash

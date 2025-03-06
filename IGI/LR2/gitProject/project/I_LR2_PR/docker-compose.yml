@@ -1,0 +1,33 @@
+services:
+  db:
+    image: mysql:latest
+    container_name: mysql_db
+    environment:
+      MYSQL_ROOT_PASSWORD: 12345
+      MYSQL_DATABASE: TRANSACTIONS_DB
+      MYSQL_USER: stepik
+      MYSQL_PASSWORD: 12345  
+    ports:
+      - "3307:3306"  
+    volumes:
+      - db_data:/var/lib/mysql  
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql 
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p12345"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+  app:  
+    build: . 
+    ports:
+      - "8080:8080" 
+    depends_on:
+      db:  
+        condition: service_healthy 
+    environment:  
+      MYSQL_DATABASE: TRANSACTIONS_DB 
+      MYSQL_USER: stepik 
+      MYSQL_PASSWORD: 12345
+    restart: on-failure  
+volumes:
+  db_data:  
