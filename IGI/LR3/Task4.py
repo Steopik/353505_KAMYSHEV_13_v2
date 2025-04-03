@@ -18,6 +18,7 @@ def Task4():
     "pleasure of making a daisy-chain would be worth the trouble of getting up " \
     "and picking the daisies, when suddenly a White Rabbit with pink eyes ran close by her."
     words = START_STRING.split(" ")
+    
 
     lowercase_number, uppercase_number = Sub_task1(START_STRING)
     print(f"Quantity lowercase letters = {lowercase_number}. Quantity uppercase letters = {uppercase_number}")
