@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Вакансии{% endblock %}
+{% block content %}
+    <h2>Наши вакансии</h2>
+
+    {% if vacancies %}
+        <div style="display: grid; gap: 1em;">
+            {% for vacancy in vacancies %}
+                <div style="border: 1px solid #ccc; padding: 1em; border-radius: 8px;">
+                    <h3>{{ vacancy.title }}</h3>
+                    <p>{{ vacancy.description|truncatewords:30 }}</p>
+                    <p><strong>Зарплата:</strong> {{ vacancy.salary|default:"По договорённости" }}</p>
+                    <p><small>Опубликовано: {{ vacancy.published_at|date:'d.m.Y' }}</small></p>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>Нет активных вакансий</p>
+    {% endif %}
+
+    <hr>
+    <a href="{% url 'home' %}">← На главную</a>
+{% endblock %}

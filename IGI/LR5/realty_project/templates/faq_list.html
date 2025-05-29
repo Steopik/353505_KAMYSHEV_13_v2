@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Словарь терминов и понятий{% endblock %}
+{% block content %}
+    <h2>Словарь терминов и понятий</h2>
+
+    {% if faqs %}
+        <div style="margin-bottom: 2em;">
+            {% for item in faqs %}
+                <div style="margin-bottom: 1em; border-bottom: 1px solid #ddd; padding-bottom: 1em;">
+                    <h3>{{ item.question }}</h3>
+                    <p>{{ item.answer|linebreaksbr }}</p>
+                    <small>Добавлено: {{ item.added_at|date:"d.m.Y" }}</small>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>Пока нет ни одного вопроса.</p>
+    {% endif %}
+
+    <a href="{% url 'home' %}">← На главную</a>
+{% endblock %}

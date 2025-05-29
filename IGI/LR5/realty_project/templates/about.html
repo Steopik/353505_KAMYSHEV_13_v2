@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}О компании{% endblock %}
+{% block content %}
+    <h2>{{ info.title }}</h2>
+    
+    {% if info.logo %}
+        <img src="{{ info.logo.url }}" alt="Логотип" width="200">
+    {% endif %}
+    
+    <p>{{ info.description|linebreaksbr }}</p>
+
+    {% if info.history %}
+        <h3>История компании</h3>
+        <pre>{{ info.history }}</pre>
+    {% endif %}
+
+    <h3>Реквизиты</h3>
+    <p><strong>Адрес:</strong> {{ info.address|default:"—" }}</p>
+    <p><strong>Телефон:</strong> {{ info.phone|default:"—" }}</p>
+    <p><strong>Email:</strong> {{ info.email|default:"—" }}</p>
+
+    {% if info.video_url %}
+        <h3>Видео</h3>
+        <iframe width="560" height="315" 
+                src="{{ info.video_url }}" 
+                frameborder="0" allowfullscreen></iframe>
+    {% endif %}
+{% endblock %}

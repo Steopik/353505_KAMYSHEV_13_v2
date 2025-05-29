@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Главная{% endblock %}
+{% block content %}
+    <h2>Добро пожаловать в риэлторское агентство</h2>
+
+    <section>
+        <h3>Последние события</h3>
+        {% if events %}
+            <ul style="list-style-type: none; padding: 0;">
+                {% for event in events %}
+                    <li style="margin-bottom: 1em; border-left: 3px solid #ccc; padding-left: 1em;">
+                        <strong>{{ event.title }}</strong><br>
+                        <small>{{ event.date|date:"d.m.Y H:i" }}</small><br>
+                        {{ event.description }}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>Нет событий</p>
+        {% endif %}
+    </section>
+
+    <hr>
+
+    <section>
+        <h3>Другие действия</h3>
+        <ul>
+            <li><a href="{% url 'realty:property_list' %}">Смотреть все объекты</a></li>
+            <li><a href="{% url 'realty:statistics' %}">Статистика</a></li>
+        </ul>
+    </section>
+{% endblock %}

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}REALTY_PROJECT{% endblock %}</title>
+</head>
+<body>
+
+<header style="background-color: #f5f5f5; padding: 1em; border-bottom: 2px solid #ccc;">
+    <h1>REALTY_PROJECT — Риэлторское агентство</h1>
+
+    <nav style="margin-top: 1em;">
+        <ul style="list-style: none; display: flex; gap: 1em; font-weight: bold;">
+            <li><a href="{% url 'home' %}">Главная</a></li>
+            <li><a href="{% url 'realty:property_list' %}">Недвижимость</a></li>
+            <li><a href="{% url 'about' %}">О компании</a></li>
+            <li><a href="{% url 'faq_list' %}">FAQ</a></li>
+            <li><a href="{% url 'contact_list' %}">Контакты</a></li>
+            <li><a href="{% url 'reviews_list' %}">Отзывы</a></li>
+            <li><a href="{% url 'vacancy_list' %}">Вакансии</a></li>
+            <li><a href="{% url 'promo_list' %}">Промокоды</a></li>
+
+            {% if user.is_superuser %}
+                <li><a href="{% url 'realty:statistics' %}">Статистика</a></li>
+            {% endif %}
+
+            <!-- Кнопки для входа/регистрации или профиля -->
+            {% if not user.is_authenticated %}
+                <li><a href="{% url 'login' %}">Вход</a></li>
+                <li><a href="{% url 'register' %}">Регистрация</a></li>
+            {% else %}
+                <li><a href="{% url 'profile' %}">Профиль</a></li>
+                <li><a href="{% url 'logout' %}">Выход</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+
+    <hr style="margin: 1em 0;">
+</header>
+
+<main style="padding: 1em; max-width: 1200px; margin: auto;">
+    <!-- Сообщения Django (success, warning, error) -->
+    {% if messages %}
+        <ul class="messages" style="list-style: none; padding-left: 0; color: green;">
+            {% for message in messages %}
+                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>
+                    {{ message }}
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <!-- Основной контент страницы -->
+    {% block content %}
+        <p>Блок content пуст</p>
+    {% endblock %}
+</main>
+
+<footer style="margin-top: 3em; text-align: center; color: #666; font-size: 0.9em;">
+    <p>&copy; 2025 REALTY_PROJECT — Риэлторское агентство</p>
+</footer>
+
+</body>
+</html>
