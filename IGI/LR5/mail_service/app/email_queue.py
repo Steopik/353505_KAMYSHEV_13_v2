@@ -1,23 +1,23 @@
+# app/email_queue.py
 import asyncio
-from .email_utils import send_email
-from .logger import logger
+from .email_sender import send_email
+from .logger_config import get_logger
 
-
-email_queue = asyncio.Queue()
-
-async def enqueue_email(to_email: str, subject: str, body: str):
-    await email_queue.put((to_email, subject, body))
-    logger.info(f"Email enqueued for {to_email}")
+logger = get_logger(__name__)
+queue = asyncio.Queue()
 
 async def process_queue():
     logger.info("Email queue processor started")
     while True:
-        to_email, subject, body = await email_queue.get()
-        logger.info(f"Processing email to {to_email}")
+        to, subject, body = await queue.get()
         try:
-            await send_email(to_email, subject, body)
-            logger.info(f"Email successfully sent to {to_email}")
+            await send_email(to, subject, body)
+            logger.debug(f"Email sent to {to}")
         except Exception as e:
-            logger.error(f"Error sending email to {to_email}: {e}")
+            logger.error(f"Failed to send email to {to}: {e}")
         finally:
-            email_queue.task_done()
+            queue.task_done()
+
+def add_to_queue(to, subject, body):
+    logger.debug(f"Email added to queue for {to}")
+    queue.put_nowait((to, subject, body))

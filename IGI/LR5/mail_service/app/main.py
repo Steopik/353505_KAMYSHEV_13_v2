@@ -1,24 +1,24 @@
-from fastapi import FastAPI, BackgroundTasks
+# app/main.py
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, EmailStr
-import asyncio
-from .email_queue import enqueue_email, process_queue
-from .logger import logger
+from .email_queue import add_to_queue
+from .logger_config import get_logger
 
+logger = get_logger(__name__)
 
-class EmailSchema(BaseModel):
+app = FastAPI()
+
+class EmailRequest(BaseModel):
     to: EmailStr
     subject: str
     body: str
 
-app = FastAPI()
-
-@app.on_event("startup")
-async def startup_event():
-    logger.info("Starting email queue processing task")
-    asyncio.create_task(process_queue())
-
 @app.post("/send-email/")
-async def send_email_view(email: EmailSchema):
-    await enqueue_email(email.to, email.subject, email.body)
-    logger.info(f"Received email request for {email.to}")
-    return {"message": "Email added to queue"}
+async def send_email(request: EmailRequest):
+    logger.info(f"Received request to send email to {request.to}")
+    add_to_queue(request.to, request.subject, request.body)
+    return {"status": "queued"}
+
+@app.get("/")
+async def root():
+    return {"message": "Email notification service is running"}
