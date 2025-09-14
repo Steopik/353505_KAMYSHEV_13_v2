@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Объекты недвижимости{% endblock %}
+{% block content %}
+    <h2>Объекты недвижимости</h2>
+
+    <form method="get">
+        <input type="text" name="q" placeholder="Поиск по названию или адресу" value="{{ query }}">
+        <select name="type">
+            <option value="">Все типы</option>
+            {% for code, name in types %}
+                <option value="{{ code }}" {% if selected_type == code %}selected{% endif %}>
+                    {{ name }}
+                </option>
+            {% endfor %}
+        </select>
+        <button type="submit">Найти</button>
+    </form>
+
+    {% if properties %}
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1em;">
+            {% for prop in properties %}
+                <div style="border: 1px solid #ccc; padding: 1em; border-radius: 8px;">
+                    <h3>{{ prop.title }}</h3>
+                    <p><strong>Адрес:</strong> {{ prop.address|truncatechars:50 }}</p>
+                    <p><strong>Цена:</strong> {{ prop.price }} руб.</p>
+                    <p><strong>Площадь:</strong> {{ prop.area }} м²</p>
+                    <p><strong>Тип:</strong> {{ prop.get_property_type_display }}</p>
+
+                    <a href="{% url 'realty:property_detail' pk=prop.pk %}">
+                        Подробнее
+                    </a>
+
+                    {% if user.is_authenticated and prop.is_available %}
+                        <form action="{% url 'realty:buy_property' prop.pk %}" method="post" style="margin-top: 1em;">
+                            {% csrf_token %}
+                            <button type="submit">Купить</button>
+                        </form>
+                    {% elif prop.is_available %}
+                        <p style="color: red;">Авторизуйтесь, чтобы купить</p>
+                    {% else %}
+                        <p style="color: green;">Продано</p>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>Ничего не найдено</p>
+    {% endif %}
+{% endblock %}

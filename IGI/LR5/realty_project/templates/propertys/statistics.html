@@ -1,0 +1,53 @@
+{% block content %}
+    <h2>Статистика риэлторского агентства</h2>
+
+    <div style="margin-bottom: 2em;">
+        <p><strong>Общее число объектов:</strong> {{ total_properties }}</p>
+        <p><strong>Число проданных объектов:</strong> {{ total_sales }}</p>
+        <p><strong>Общий доход:</strong> {{ total_income_sum|floatformat:2 }} руб.</p>
+        <p><strong>Средняя цена проданного объекта:</strong> {{ avg_price|floatformat:2 }} руб.</p>
+        <p><strong>Наиболее часто продаваемый тип:</strong> {{ most_common_type }}</p>
+    </div>
+
+    <h3>Распределение объектов по типам</h3>
+    {% if chart_property_types %}
+        <img src="data:image/png;base64,{{ chart_property_types }}" alt="График по типам недвижимости">
+    {% else %}
+        <p>Нет данных</p>
+    {% endif %}
+
+    <h3>Диаграмма продаж по типам недвижимости</h3>
+    {% if chart_sale_by_type %}
+        <img src="data:image/png;base64,{{ chart_sale_by_type }}" alt="Диаграмма по типам (продажи)">
+    {% else %}
+        <p>Нет данных о продажах по типам</p>
+    {% endif %}
+
+    <h3>Сделки по сотрудникам</h3>
+    {% if chart_agents %}
+        <img src="data:image/png;base64,{{ chart_agents }}" alt="График по сотрудникам">
+    {% else %}
+        <p>Нет данных о сделках сотрудников</p>
+    {% endif %}
+
+    {% if agent_stats %}
+        <table border="1" style="width: 100%; border-collapse: collapse;">
+            <tr>
+                <th>Сотрудник</th>
+                <th>Число сделок</th>
+                <th>Общий доход</th>
+                <th>Средняя стоимость сделки</th>
+            </tr>
+            {% for a in agent_stats %}
+                <tr>
+                    <td>{{ a.name }}</td>
+                    <td>{{ a.sales }}</td>
+                    <td>{{ a.income|floatformat:2 }} руб.</td>
+                    <td>{{ a.avg_deal|floatformat:2 }} руб.</td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <p>Нет сотрудников или сделок</p>
+    {% endif %}
+{% endblock %}

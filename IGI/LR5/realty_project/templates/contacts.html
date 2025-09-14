@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Наши сотрудники{% endblock %}
+{% block content %}
+    <h2>Наши агенты</h2>
+
+    {% if agents %}
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1em;">
+            {% for agent in agents %}
+                <div style="border: 1px solid #ccc; padding: 1em; border-radius: 8px;">
+                    {% if agent.user.avatar %}
+                        <img src="{{ agent.user.avatar.url }}" width="150">
+                    {% else %}
+                        <p>Нет фото</p>
+                    {% endif %}
+
+                    <h3>{{ agent }}</h3>
+                    <p><strong>Должность:</strong> {{ agent.department }}</p>
+                    <p><strong>Телефон:</strong> {{ agent.phone }}</p>
+                    <p><strong>Стаж:</strong> {{ agent.experience_years }} лет</p>
+
+                    {% if agent.bio %}
+                        <p><strong>О себе:</strong> {{ agent.bio|truncatewords:15 }}</p>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>Нет доступных сотрудников</p>
+    {% endif %}
+
+    <hr>
+    <a href="{% url 'home' %}">← На главную</a>
+{% endblock %}

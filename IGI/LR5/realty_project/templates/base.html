@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="ru" itemscope itemtype="http://schema.org/WebSite">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Агентство недвижимости в Минске - продажа квартир, домов, офисов. Лучшие предложения недвижимости в Беларуси">
+    <meta name="keywords" content="недвижимость, квартиры, дома, офисы, продажа, аренда, Минск, Беларусь">
+    <meta name="author" content="Недвижимость Минск">
+    <meta name="robots" content="index, follow">
+    <meta name="geo.region" content="BY-HM">
+    <meta name="geo.placename" content="Минск">
+    <meta name="geo.position" content="53.9006;27.5590">
+    <meta name="ICBM" content="53.9006, 27.5590">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="http://localhost:8000/">
+    <meta property="og:title" content="{% block og_title %}Недвижимость Минск - Агентство недвижимости{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}Лучшие предложения недвижимости в Минске и Беларуси{% endblock %}">
+    <meta property="og:image" content="/static/images/logo.png">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="http://localhost:8000/">
+    <meta property="twitter:title" content="{% block twitter_title %}Недвижимость Минск{% endblock %}">
+    <meta property="twitter:description" content="{% block twitter_description %}Агентство недвижимости{% endblock %}">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon-16x16.png">
+    
+    <!-- Schema.org микроразметка для организации -->
+    <meta itemprop="name" content="Недвижимость Минск">
+    <meta itemprop="description" content="Агентство недвижимости в Минске">
+    <meta itemprop="url" content="http://localhost:8000/">
+    
+    <title>{% block title %}Недвижимость Минск{% endblock %}</title>
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        nav {
+            background-color: #333;
+            color: white;
+            padding: 1rem;
+        }
+        nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        nav a {
+            color: white;
+            text-decoration: none;
+        }
+        nav a:hover {
+            text-decoration: underline;
+        }
+        .messages {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .card {
+            background: white;
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .weather-info, .currency-info {
+            display: inline-block;
+            margin: 10px;
+            padding: 10px;
+            background: #e9ecef;
+            border-radius: 5px;
+        }
+        .vertical-nav {
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            color: #333 !important;
+        }
+        .vertical-nav * {
+            color: #333 !important;
+        }
+        .vertical-nav ul {
+            list-style: none;
+            padding: 0;
+        }
+        .vertical-nav li {
+            margin: 10px 0;
+            color: #333 !important;
+        }
+        .vertical-nav a {
+            color: #333 !important;
+            text-decoration: none;
+        }
+        .vertical-nav a:hover {
+            color: #007bff !important;
+            text-decoration: underline;
+        }
+        aside {
+            color: #333 !important;
+        }
+        aside * {
+            color: inherit !important;
+        }
+        aside a:hover {
+            color: #007bff !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Семантическая разметка HTML5 -->
+    <header role="banner">
+        <!-- Горизонтальная навигация -->
+        <nav role="navigation" aria-label="Основная навигация">
+            <div class="container">
+                <ul>
+                    <li><a href="{% url 'home' %}" accesskey="h">Главная</a></li>
+                    <li><a href="{% url 'realty:property_list' %}" accesskey="p">Недвижимость</a></li>
+                    <li><a href="{% url 'realty:news_list' %}" accesskey="n">Новости</a></li>
+                    <li><a href="{% url 'realty:statistics' %}" accesskey="s">Статистика</a></li>
+                    <li><a href="{% url 'realty:about' %}" accesskey="a">О компании</a></li>
+                    <li><a href="{% url 'realty:faq' %}" accesskey="f">FAQ</a></li>
+                    <li><a href="{% url 'realty:contacts' %}" accesskey="c">Контакты</a></li>
+                    <li><a href="{% url 'realty:vacancies' %}">Вакансии</a></li>
+                    <li><a href="{% url 'realty:reviews' %}" accesskey="r">Отзывы</a></li>
+                    <li><a href="{% url 'realty:promocodes' %}">Промокоды</a></li>
+                    <li><a href="{% url 'realty:cart' %}">🛒 Корзина</a></li>
+                    {% if user.is_authenticated %}
+                        <li><a href="{% url 'profile' %}">Профиль</a></li>
+                        <li><a href="{% url 'logout' %}">Выйти</a></li>
+                    {% else %}
+                        <li><a href="{% url 'login' %}">Войти</a></li>
+                        <li><a href="{% url 'register' %}">Регистрация</a></li>
+                    {% endif %}
+                    {% if user.is_superuser %}
+                        <li><a href="/admin/" accesskey="m">Админ</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div style="display: flex; gap: 20px;">
+            <!-- Вертикальная навигация в боковой панели -->
+            <aside role="complementary" style="flex: 0 0 200px; position: sticky; top: 20px; align-self: flex-start; max-height: 90vh; overflow-y: auto;">
+                <nav class="vertical-nav" aria-label="Дополнительная навигация">
+                    <h3>Быстрые ссылки</h3>
+                    <ul>
+                        <li><a href="#top">⬆ Наверх</a></li>
+                        <li><a href="{% url 'realty:property_list' %}?type=apartment">🏢 Квартиры</a></li>
+                        <li><a href="{% url 'realty:property_list' %}?type=house">🏠 Дома</a></li>
+                        <li><a href="{% url 'realty:property_list' %}?type=office">🏢 Офисы</a></li>
+                        <li><a href="{% url 'realty:property_list' %}?type=land">🌍 Земля</a></li>
+                        <li><a href="{% url 'realty:privacy_policy' %}">🔒 Политика конфиденциальности</a></li>
+                        <li><a href="/static/docs/agreement.pdf" download>📄 Скачать договор</a></li>
+                        <li><a href="mailto:info@realty.by">✉️ Написать нам</a></li>
+                        <li><a href="tel:+375291234567">📞 Позвонить</a></li>
+                    </ul>
+                </nav>
+                
+                <!-- Дополнительная информация -->
+                <section class="vertical-nav" style="margin-top: 20px;">
+                    <h4>Полезная информация</h4>
+                    <details>
+                        <summary style="cursor: pointer;">Рабочие часы</summary>
+                        <p>Пн-Пт: 9:00-18:00<br>
+                        Сб: 10:00-15:00<br>
+                        Вс: выходной</p>
+                    </details>
+                    <details>
+                        <summary style="cursor: pointer;">Наши услуги</summary>
+                        <ul>
+                            <li>Оценка недвижимости</li>
+                            <li>Юридическое сопровождение</li>
+                            <li>Ипотечное кредитование</li>
+                        </ul>
+                    </details>
+                </section>
+            </aside>
+
+            <!-- Основной контент -->
+            <main role="main" style="flex: 1;" id="top">
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="messages {{ message.tags }}" role="alert">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                {% block content %}
+                {% endblock %}
+            </main>
+        </div>
+    </div>
+
+    <!-- Подвал сайта -->
+    <footer role="contentinfo" style="background-color: #333; color: white; text-align: center; padding: 20px; margin-top: 40px;">
+        <div itemscope itemtype="http://schema.org/Organization">
+            <p>&copy; <time datetime="2024">2024</time> 
+            <span itemprop="name">Недвижимость Минск</span>. 
+            Все права защищены.</p>
+            
+            <address itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">
+                <span itemprop="streetAddress">ул. Независимости, 58</span>,
+                <span itemprop="addressLocality">Минск</span>,
+                <span itemprop="postalCode">220030</span>,
+                <span itemprop="addressCountry">Беларусь</span>
+            </address>
+            
+            <p>
+                Телефон: <a href="tel:+375291234567" itemprop="telephone">+375 (29) 123-45-67</a> |
+                Email: <a href="mailto:info@realty.by" itemprop="email">info@realty.by</a>
+            </p>
+            
+            <!-- Ссылки на социальные сети -->
+            <nav aria-label="Социальные сети">
+                <a href="https://facebook.com" rel="noopener noreferrer" target="_blank">Facebook</a> |
+                <a href="https://instagram.com" rel="noopener noreferrer" target="_blank">Instagram</a> |
+                <a href="https://vk.com" rel="noopener noreferrer" target="_blank">VK</a>
+            </nav>
+        </div>
+    </footer>
+</body>
+</html>

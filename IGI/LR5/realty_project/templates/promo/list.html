@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Промокоды{% endblock %}
+{% block content %}
+    <h2>Действующие промокоды</h2>
+
+    {% if promos %}
+        <ul>
+            {% for promo in promos %}
+                <li>
+                    <strong>{{ promo.code }}</strong> — {{ promo.discount_percent }}%<br>
+                    <small>Действует до: {{ promo.valid_to|date:"d.m.Y H:i" }}</small><br>
+                    Осталось использований: {{ promo.uses|add:"-promo.used_count" }}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Нет доступных промокодов</p>
+    {% endif %}
+
+    <hr>
+    <a href="{% url 'home' %}">← На главную</a>
+{% endblock %}

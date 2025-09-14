@@ -1,0 +1,9 @@
+logs/
+venv/
+static/
+__pycache__/
+.env
+db.sqlite3
+media/
+**/migrations/
+**/__pycache__/

@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Новости{% endblock %}
+{% block content %}
+    <h2>Новости</h2>
+
+    {% if news_list %}
+        <div style="display: grid; gap: 1em;">
+            {% for post in news_list %}
+                <div style="border: 1px solid #ccc; padding: 1em; border-radius: 8px;">
+                    <h3><a href="{% url 'news:news_detail' post.slug %}">{{ post.title }}</a></h3>
+                    <p>{{ post.preview|default:"Без описания" }}</p>
+                    <small>Автор: {{ post.author.full_name }} | {{ post.published_at|date:'d.m.Y H:i' }}</small>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>Нет опубликованных новостей</p>
+    {% endif %}
+{% endblock %}

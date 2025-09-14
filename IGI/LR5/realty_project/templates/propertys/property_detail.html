@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}{{ property.title }} | Подробности{% endblock %}
+{% block content %}
+    <h2>{{ property.title }}</h2>
+
+    <div style="margin-bottom: 1em;">
+        {% if property.owner.avatar %}
+            <img src="{{ property.owner.avatar.url }}" width="60" alt="Аватар владельца">
+        {% endif %}
+        <p><strong>Владелец:</strong> {{ property.owner.full_name }} ({{ property.owner.email }})</p>
+    </div>
+
+    <p><strong>Тип:</strong> {{ property.get_property_type_display }}</p>
+    <p><strong>Адрес:</strong> {{ property.address }}</p>
+    <p><strong>Цена:</strong> {{ property.price }} руб.</p>
+    <p><strong>Площадь:</strong> {{ property.area }} м²</p>
+    <p><strong>Описание:</strong> {{ property.description|default:"—" }}</p>
+
+    {% if property.is_available and request.user.is_authenticated %}
+        <form method="post" action="{% url 'realty:buy_property' property.pk %}">
+            {% csrf_token %}
+            <button type="submit">Купить</button>
+        </form>
+    {% elif not property.is_available %}
+        <p style="color: green;">Объект продан</p>
+    {% else %}
+        <p>Чтобы купить, войдите в аккаунт покупателя</p>
+    {% endif %}
+
+    {% if property.is_available %}
+        <h3>Применить промокод</h3>
+        <form method="get" action="{% url 'realty:buy_property' property.id %}">
+            <input type="text" name="promo" placeholder="Введите промокод">
+            <button type="submit">Купить с промокодом</button>
+        </form>
+
+        <form method="post" action="{% url 'realty:buy_property' property.id %}">
+            {% csrf_token %}
+            <button type="submit">Купить без промокода</button>
+        </form>
+    {% endif %}
+{% endblock %}
