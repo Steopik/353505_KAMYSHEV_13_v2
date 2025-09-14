@@ -3,7 +3,6 @@ venv/
 static/
 __pycache__/
 .env
-*.txt
 db.sqlite3
 media/
 **/migrations/
