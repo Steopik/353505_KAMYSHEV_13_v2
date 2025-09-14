@@ -1,0 +1,323 @@
+{% extends "base.html" %}
+{% block title %}Оформление заказа{% endblock %}
+
+{% block content %}
+<article>
+    <header>
+        <h1>💳 Оформление заказа</h1>
+    </header>
+
+    <!-- Прогресс оформления -->
+    <nav class="card">
+        <h3>Этапы оформления:</h3>
+        <ol>
+            <li>✅ Выбор объектов</li>
+            <li>✅ Корзина</li>
+            <li><mark>→ Оплата</mark></li>
+            <li>⏳ Подтверждение</li>
+        </ol>
+    </nav>
+
+    <!-- Форма оплаты с различными типами полей -->
+    <form method="post" action="{% url 'realty:payment' %}" novalidate>
+        {% csrf_token %}
+        
+        <!-- Личные данные -->
+        <fieldset class="card">
+            <legend><h2>👤 Личные данные</h2></legend>
+            
+            <label for="fullname">Полное имя: <abbr title="обязательное поле" aria-label="required">*</abbr></label><br>
+            <input type="text" 
+                   id="fullname" 
+                   name="fullname" 
+                   required 
+                   placeholder="Иванов Иван Иванович"
+                   pattern="[А-Яа-яЁё\s]{3,50}"
+                   title="Только кириллица, от 3 до 50 символов"
+                   autocomplete="name"
+                   autofocus><br><br>
+            
+            <label for="email">Email: <abbr title="обязательное поле">*</abbr></label><br>
+            <input type="email" 
+                   id="email" 
+                   name="email" 
+                   required 
+                   placeholder="example@mail.ru"
+                   autocomplete="email"><br><br>
+            
+            <label for="phone">Телефон: <abbr title="обязательное поле">*</abbr></label><br>
+            <input type="tel" 
+                   id="phone" 
+                   name="phone" 
+                   required
+                   pattern="\+375 \((29|25|44|33)\) [0-9]{3}-[0-9]{2}-[0-9]{2}"
+                   placeholder="+375 (29) 123-45-67"
+                   autocomplete="tel"><br><br>
+            
+            <label for="birthdate">Дата рождения:</label><br>
+            <input type="date" 
+                   id="birthdate" 
+                   name="birthdate"
+                   min="1900-01-01"
+                   max="{{ 'now'|date:'Y-m-d' }}"><br><br>
+            
+            <label for="passport">Серия и номер паспорта: <abbr title="обязательное поле">*</abbr></label><br>
+            <input type="text" 
+                   id="passport" 
+                   name="passport"
+                   required
+                   pattern="[A-Z]{2}[0-9]{7}"
+                   placeholder="MP1234567"
+                   title="Формат: две заглавные латинские буквы и 7 цифр"><br><br>
+        </fieldset>
+
+        <!-- Адрес доставки документов -->
+        <fieldset class="card">
+            <legend><h2>📍 Адрес доставки документов</h2></legend>
+            
+            <label for="country">Страна:</label><br>
+            <select id="country" name="country" required>
+                <option value="">-- Выберите страну --</option>
+                <option value="BY" selected>Беларусь</option>
+                <option value="RU">Россия</option>
+                <option value="UA">Украина</option>
+                <option value="PL">Польша</option>
+                <option value="LT">Литва</option>
+            </select><br><br>
+            
+            <label for="city">Город: <abbr title="обязательное поле">*</abbr></label><br>
+            <input type="text" 
+                   id="city" 
+                   name="city"
+                   required
+                   list="cities"
+                   placeholder="Минск"
+                   autocomplete="address-level2">
+            <datalist id="cities">
+                <option value="Минск">
+                <option value="Гомель">
+                <option value="Могилев">
+                <option value="Витебск">
+                <option value="Гродно">
+                <option value="Брест">
+            </datalist><br><br>
+            
+            <label for="street">Улица и дом: <abbr title="обязательное поле">*</abbr></label><br>
+            <input type="text" 
+                   id="street" 
+                   name="street"
+                   required
+                   placeholder="ул. Независимости, д. 58, кв. 10"
+                   autocomplete="street-address"><br><br>
+            
+            <label for="postal">Почтовый индекс:</label><br>
+            <input type="text" 
+                   id="postal" 
+                   name="postal"
+                   pattern="[0-9]{6}"
+                   placeholder="220030"
+                   maxlength="6"
+                   autocomplete="postal-code"><br><br>
+        </fieldset>
+
+        <!-- Способ оплаты -->
+        <fieldset class="card">
+            <legend><h2>💰 Способ оплаты</h2></legend>
+            
+            <input type="radio" id="card" name="payment_method" value="card" checked required>
+            <label for="card">💳 Банковская карта</label><br>
+            
+            <input type="radio" id="cash" name="payment_method" value="cash">
+            <label for="cash">💵 Наличные в офисе</label><br>
+            
+            <input type="radio" id="transfer" name="payment_method" value="transfer">
+            <label for="transfer">🏦 Банковский перевод</label><br>
+            
+            <input type="radio" id="installment" name="payment_method" value="installment">
+            <label for="installment">📅 Рассрочка</label><br><br>
+            
+            <!-- Детали карты (показываются при выборе оплаты картой) -->
+            <div id="card-details">
+                <h4>Данные карты</h4>
+                
+                <label for="cardnumber">Номер карты: <abbr title="обязательное поле">*</abbr></label><br>
+                <input type="text" 
+                       id="cardnumber" 
+                       name="cardnumber"
+                       pattern="[0-9]{4} [0-9]{4} [0-9]{4} [0-9]{4}"
+                       placeholder="1234 5678 9012 3456"
+                       maxlength="19"
+                       autocomplete="cc-number"><br><br>
+                
+                <label for="cardholder">Имя на карте: <abbr title="обязательное поле">*</abbr></label><br>
+                <input type="text" 
+                       id="cardholder" 
+                       name="cardholder"
+                       pattern="[A-Z\s]{3,30}"
+                       placeholder="IVAN IVANOV"
+                       autocomplete="cc-name"><br><br>
+                
+                <label for="expiry">Срок действия: <abbr title="обязательное поле">*</abbr></label><br>
+                <input type="month" 
+                       id="expiry" 
+                       name="expiry"
+                       min="{{ 'now'|date:'Y-m' }}"
+                       autocomplete="cc-exp"><br><br>
+                
+                <label for="cvv">CVV/CVC: <abbr title="обязательное поле">*</abbr></label><br>
+                <input type="password" 
+                       id="cvv" 
+                       name="cvv"
+                       pattern="[0-9]{3}"
+                       maxlength="3"
+                       placeholder="123"
+                       autocomplete="cc-csc"><br><br>
+            </div>
+        </fieldset>
+
+        <!-- Дополнительные опции -->
+        <fieldset class="card">
+            <legend><h2>📋 Дополнительные услуги</h2></legend>
+            
+            <input type="checkbox" id="insurance" name="insurance" value="yes">
+            <label for="insurance">🛡️ Страхование сделки (+500 BYN)</label><br>
+            
+            <input type="checkbox" id="evaluation" name="evaluation" value="yes">
+            <label for="evaluation">📊 Независимая оценка объекта (+300 BYN)</label><br>
+            
+            <input type="checkbox" id="legal" name="legal" value="yes" checked>
+            <label for="legal">⚖️ Юридическое сопровождение (бесплатно)</label><br>
+            
+            <input type="checkbox" id="delivery" name="delivery" value="yes">
+            <label for="delivery">🚚 Доставка документов курьером (+50 BYN)</label><br><br>
+            
+            <label for="comment">Комментарий к заказу:</label><br>
+            <textarea id="comment" 
+                      name="comment" 
+                      rows="4" 
+                      cols="50"
+                      maxlength="500"
+                      placeholder="Ваши пожелания или дополнительная информация..."></textarea><br><br>
+            
+            <label for="preferred-date">Предпочтительная дата сделки:</label><br>
+            <input type="date" 
+                   id="preferred-date" 
+                   name="preferred_date"
+                   min="{{ 'now'|date:'Y-m-d' }}"><br><br>
+            
+            <label for="preferred-time">Предпочтительное время:</label><br>
+            <input type="time" 
+                   id="preferred-time" 
+                   name="preferred_time"
+                   min="09:00"
+                   max="18:00"
+                   step="1800"><br><br>
+        </fieldset>
+
+        <!-- Итоговая сумма -->
+        <section class="card">
+            <h2>📊 Итого к оплате</h2>
+            <table>
+                <caption>Детализация заказа</caption>
+                <tbody>
+                    <tr>
+                        <th scope="row">Объекты недвижимости:</th>
+                        <td><strong>{{ total_price|floatformat:0 }} BYN</strong></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Дополнительные услуги:</th>
+                        <td><output id="additional-cost">0</output> BYN</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Скидка:</th>
+                        <td><output id="discount">0</output> BYN</td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th scope="row">ИТОГО:</th>
+                        <td><strong><output id="total">{{ total_price|floatformat:0 }}</output> BYN</strong></td>
+                    </tr>
+                </tfoot>
+            </table>
+            
+            <!-- Индикатор прогресса -->
+            <label for="payment-progress">Готовность к оплате:</label>
+            <progress id="payment-progress" value="70" max="100">70%</progress>
+        </section>
+
+        <!-- Соглашения -->
+        <fieldset class="card">
+            <legend><h3>📄 Соглашения</h3></legend>
+            
+            <input type="checkbox" id="terms" name="terms" required>
+            <label for="terms">
+                Я согласен с <a href="{% url 'realty:privacy_policy' %}" target="_blank">условиями обработки персональных данных</a> 
+                <abbr title="обязательное поле">*</abbr>
+            </label><br>
+            
+            <input type="checkbox" id="newsletter" name="newsletter">
+            <label for="newsletter">Хочу получать новости и специальные предложения</label><br><br>
+            
+            <!-- Капча (простая математическая) -->
+            <label for="captcha">Защита от роботов: сколько будет 2 + 3? <abbr title="обязательное поле">*</abbr></label><br>
+            <input type="number" 
+                   id="captcha" 
+                   name="captcha"
+                   required
+                   min="0"
+                   max="10"
+                   placeholder="?"
+                   style="width: 50px;"><br><br>
+        </fieldset>
+
+        <!-- Кнопки действий -->
+        <nav class="card">
+            <button type="submit" class="btn" style="background-color: #28a745;">
+                ✅ Оформить заказ
+            </button>
+            <button type="reset" class="btn" style="background-color: #ffc107;">
+                🔄 Очистить форму
+            </button>
+            <a href="{% url 'realty:cart' %}" class="btn" style="background-color: #6c757d;">
+                ← Вернуться в корзину
+            </a>
+        </nav>
+    </form>
+
+    <!-- Информация о безопасности -->
+    <aside class="card">
+        <h3>🔒 Безопасность платежей</h3>
+        <p>Все платежи защищены по стандарту <abbr title="Payment Card Industry Data Security Standard">PCI DSS</abbr>.</p>
+        <p>Мы используем <kbd>SSL</kbd> шифрование для защиты ваших данных.</p>
+        <p>Код безопасности: <code>SEC-2024-REALTY</code></p>
+        <meter value="9" min="0" max="10" optimum="9">Уровень безопасности: 9/10</meter>
+    </aside>
+</article>
+
+<script>
+// Показ/скрытие деталей карты в зависимости от способа оплаты
+document.querySelectorAll('input[name="payment_method"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+        document.getElementById('card-details').style.display = 
+            this.value === 'card' ? 'block' : 'none';
+    });
+});
+
+// Расчет дополнительных услуг
+function calculateAdditional() {
+    let cost = 0;
+    if (document.getElementById('insurance').checked) cost += 500;
+    if (document.getElementById('evaluation').checked) cost += 300;
+    if (document.getElementById('delivery').checked) cost += 50;
+    
+    document.getElementById('additional-cost').value = cost;
+    document.getElementById('total').value = {{ total_price }} + cost;
+}
+
+document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+    checkbox.addEventListener('change', calculateAdditional);
+});
+</script>
+
+{% endblock %}

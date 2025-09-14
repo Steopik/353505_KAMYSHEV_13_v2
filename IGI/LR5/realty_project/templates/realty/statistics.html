@@ -1,0 +1,217 @@
+{% extends "base.html" %}
+
+{% block title %}Статистика{% endblock %}
+
+{% block content %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<h1>Статистика</h1>
+
+<div class="grid">
+    <div class="card">
+        <h3>Объекты недвижимости</h3>
+        <p><strong>Всего объектов:</strong> {{ properties.total_count }}</p>
+        <p><strong>Средняя цена:</strong> {{ properties.avg_price|floatformat:0 }} BYN</p>
+        <p><strong>Медианная цена:</strong> {{ properties.median_price|floatformat:0 }} BYN</p>
+        <p><strong>Мин. цена:</strong> {{ properties.min_price|floatformat:0 }} BYN</p>
+        <p><strong>Макс. цена:</strong> {{ properties.max_price|floatformat:0 }} BYN</p>
+        <p><strong>Средняя площадь:</strong> {{ properties.avg_area|floatformat:1 }} м²</p>
+    </div>
+
+    <div class="card">
+        <h3>Продажи</h3>
+        <p><strong>Всего продаж:</strong> {{ sales.total_sales }}</p>
+        <p><strong>Общая выручка:</strong> {{ sales.total_revenue|floatformat:0 }} BYN</p>
+        <p><strong>Средняя цена продажи:</strong> {{ sales.avg_sale_price|floatformat:0 }} BYN</p>
+    </div>
+
+    <div class="card">
+        <h3>Покупатели</h3>
+        <p><strong>Всего покупателей:</strong> {{ buyers.total_buyers }}</p>
+        <p><strong>Средний бюджет:</strong> {{ buyers.avg_budget|floatformat:0 }} BYN</p>
+        <p><strong>С покупками:</strong> {{ buyers.buyers_with_purchases }}</p>
+    </div>
+
+    <div class="card">
+        <h3>Отзывы</h3>
+        <p><strong>Всего отзывов:</strong> {{ reviews.total_reviews }}</p>
+        <p><strong>Средний рейтинг:</strong> {{ reviews.avg_rating|floatformat:1 }}/5</p>
+    </div>
+</div>
+
+<div class="card">
+    <h3>Распределение по типам недвижимости</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Тип</th>
+                <th>Количество</th>
+                <th>Средняя цена</th>
+                <th>Общая стоимость</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in properties.type_distribution %}
+            <tr>
+                <td>{{ item.property_type }}</td>
+                <td>{{ item.count }}</td>
+                <td>{{ item.avg_price|floatformat:0 }} BYN</td>
+                <td>{{ item.total_value|floatformat:0 }} BYN</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% if most_profitable %}
+<div class="card">
+    <h3>Самый прибыльный тип недвижимости</h3>
+    <p><strong>Тип:</strong> {{ most_profitable.type }}</p>
+    <p><strong>Общая прибыль:</strong> {{ most_profitable.total_profit|floatformat:0 }} BYN</p>
+    <p><strong>Количество продаж:</strong> {{ most_profitable.sales_count }}</p>
+    <p><strong>Средняя цена:</strong> {{ most_profitable.average_price|floatformat:0 }} BYN</p>
+</div>
+{% endif %}
+
+<div class="card">
+    <h3>Текущее время</h3>
+    <p><strong>Локальное:</strong> {{ current_date.local }}</p>
+    <p><strong>UTC:</strong> {{ current_date.utc }}</p>
+</div>
+
+<div class="grid">
+    <div class="card">
+        <h3>Распределение по типам недвижимости</h3>
+        <div style="position: relative; height: 300px;">
+            <canvas id="pieChart"></canvas>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>Распределение по ценовым диапазонам</h3>
+        <div style="position: relative; height: 300px;">
+            <canvas id="barChart"></canvas>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>Продажи по месяцам</h3>
+        <div style="position: relative; height: 300px;">
+            <canvas id="lineChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<script>
+// Функция для безопасного создания графиков
+function createCharts() {
+    fetch("{% url 'realty:statistics_api' %}")
+        .then(response => response.json())
+        .then(data => {
+            // Проверяем наличие данных
+            if (data.pie_chart && data.pie_chart.labels.length > 0) {
+                const pieCtx = document.getElementById('pieChart').getContext('2d');
+                new Chart(pieCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: data.pie_chart.labels.map(label => {
+                            const types = {
+                                'apartment': 'Квартиры',
+                                'house': 'Дома',
+                                'office': 'Офисы',
+                                'land': 'Земля'
+                            };
+                            return types[label] || label;
+                        }),
+                        datasets: [{
+                            data: data.pie_chart.data,
+                            backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0'],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Столбчатая диаграмма
+            if (data.bar_chart && data.bar_chart.labels.length > 0) {
+                const barCtx = document.getElementById('barChart').getContext('2d');
+                new Chart(barCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: data.bar_chart.labels,
+                        datasets: [{
+                            label: 'Количество объектов',
+                            data: data.bar_chart.data,
+                            backgroundColor: '#36A2EB',
+                            borderColor: '#2E86AB',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    stepSize: 1
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Линейный график
+            if (data.line_chart && data.line_chart.labels.length > 0) {
+                const lineCtx = document.getElementById('lineChart').getContext('2d');
+                new Chart(lineCtx, {
+                    type: 'line',
+                    data: {
+                        labels: data.line_chart.labels.length > 0 ? data.line_chart.labels : ['Нет данных'],
+                        datasets: [{
+                            label: 'Количество продаж',
+                            data: data.line_chart.data.length > 0 ? data.line_chart.data : [0],
+                            borderColor: '#FF6384',
+                            backgroundColor: 'rgba(255, 99, 132, 0.1)',
+                            tension: 0.1,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    stepSize: 1
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Ошибка загрузки данных:', error);
+        });
+}
+
+// Загружаем графики после полной загрузки страницы
+document.addEventListener('DOMContentLoaded', createCharts);
+</script>
+{% endblock %}

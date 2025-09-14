@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Контакты{% endblock %}
+{% block content %}
+<h1>Контакты</h1>
+
+{% if company %}
+<div class="card">
+    <h2>Наш офис</h2>
+    <p><strong>Адрес:</strong> {{ company.address }}</p>
+    <p><strong>Телефон:</strong> {{ company.phone }}</p>
+    <p><strong>Email:</strong> {{ company.email }}</p>
+</div>
+{% endif %}
+
+<h2>Наши сотрудники</h2>
+<div class="grid">
+    {% for agent in agents %}
+    <div class="card">
+        <h4>{{ agent.user.last_name }} {{ agent.user.first_name }}</h4>
+        <p><strong>Должность:</strong> {{ agent.department }}</p>
+        <p><strong>Телефон:</strong> {{ agent.phone }}</p>
+        <p><strong>Email:</strong> {{ agent.user.email }}</p>
+        <p><strong>Опыт работы:</strong> {{ agent.experience_years }} лет</p>
+    </div>
+    {% empty %}
+    <p>Информация о сотрудниках появится позже</p>
+    {% endfor %}
+</div>
+{% endblock %}

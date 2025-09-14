@@ -1,0 +1,261 @@
+{% extends "base.html" %}
+{% block title %}Корзина покупок{% endblock %}
+
+{% block content %}
+<article>
+    <header>
+        <h1>🛒 Корзина покупок</h1>
+    </header>
+
+    {% if cart_items %}
+    <!-- Таблица с товарами в корзине -->
+    <section class="card">
+        <table>
+            <caption>Объекты недвижимости в вашей корзине</caption>
+            <colgroup>
+                <col style="width: 40%;">
+                <col style="width: 15%;">
+                <col style="width: 15%;">
+                <col style="width: 15%;">
+                <col style="width: 15%;">
+            </colgroup>
+            <thead>
+                <tr>
+                    <th scope="col">Объект</th>
+                    <th scope="col">Цена за единицу</th>
+                    <th scope="col">Количество</th>
+                    <th scope="col">Сумма</th>
+                    <th scope="col">Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in cart_items %}
+                <tr>
+                    <th scope="row">
+                        <a href="{% url 'realty:property_detail' item.property.pk %}">
+                            {{ item.property.title }}
+                        </a><br>
+                        <small>{{ item.property.address }}</small>
+                    </th>
+                    <td>
+                        <data value="{{ item.property.price }}">
+                            {{ item.property.price|floatformat:0 }} <abbr title="Белорусский рубль">BYN</abbr>
+                        </data>
+                    </td>
+                    <td>
+                        <form method="post" action="{% url 'realty:cart' %}" style="display: inline;">
+                            {% csrf_token %}
+                            <button type="button" onclick="decreaseQuantity({{ item.property.pk }})">➖</button>
+                            <input type="number" 
+                                   id="qty-{{ item.property.pk }}" 
+                                   name="quantity" 
+                                   value="{{ item.quantity }}" 
+                                   min="1" 
+                                   max="10" 
+                                   style="width: 50px; text-align: center;"
+                                   readonly>
+                            <button type="button" onclick="increaseQuantity({{ item.property.pk }})">➕</button>
+                        </form>
+                    </td>
+                    <td>
+                        <strong>
+                            <data value="{{ item.subtotal }}">
+                                {{ item.subtotal|floatformat:0 }} <abbr title="Белорусский рубль">BYN</abbr>
+                            </data>
+                        </strong>
+                    </td>
+                    <td>
+                        <a href="{% url 'realty:remove_from_cart' item.property.pk %}" 
+                           class="btn" 
+                           style="background-color: #dc3545;"
+                           onclick="return confirm('Удалить этот объект из корзины?')">
+                            🗑️ Удалить
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th scope="row" colspan="3">Итого:</th>
+                    <td colspan="2">
+                        <strong style="font-size: 1.2em;">
+                            <data value="{{ total_price }}">
+                                {{ total_price|floatformat:0 }} <abbr title="Белорусский рубль">BYN</abbr>
+                            </data>
+                        </strong>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row" colspan="3">В других валютах:</th>
+                    <td colspan="2">
+                        ≈ {{ total_usd|floatformat:0 }} <abbr title="United States Dollar">USD</abbr><br>
+                        ≈ {{ total_eur|floatformat:0 }} <abbr title="Euro">EUR</abbr>
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+    </section>
+
+    <!-- Промокод и действия -->
+    <section class="card">
+        <h3>Применить промокод</h3>
+        <form method="post" action="#">
+            <fieldset>
+                <legend>Промокод на скидку</legend>
+                <label for="promo">Введите промокод:</label>
+                <input type="text" 
+                       id="promo" 
+                       name="promo_code" 
+                       placeholder="SALE2024"
+                       pattern="[A-Z0-9]{4,10}"
+                       title="Промокод должен содержать от 4 до 10 символов (буквы и цифры)">
+                <button type="submit" class="btn">Применить</button>
+            </fieldset>
+        </form>
+    </section>
+
+    <!-- Кнопки действий -->
+    <nav class="card">
+        <h3>Действия с корзиной</h3>
+        <a href="{% url 'realty:payment' %}" class="btn" style="background-color: #28a745;">
+            💳 Перейти к оплате
+        </a>
+        <a href="{% url 'realty:property_list' %}" class="btn">
+            🏠 Продолжить выбор
+        </a>
+        <button onclick="clearCart()" class="btn" style="background-color: #dc3545;">
+            🗑️ Очистить корзину
+        </button>
+    </nav>
+
+    <!-- Дополнительная информация -->
+    <details class="card">
+        <summary>ℹ️ Информация о покупке</summary>
+        <dl>
+            <dt><dfn>Способы оплаты</dfn>:</dt>
+            <dd>
+                <ul>
+                    <li>💳 Банковская карта</li>
+                    <li>💰 Наличные в офисе</li>
+                    <li>🏦 Банковский перевод</li>
+                    <li>💎 Рассрочка от банка-партнера</li>
+                </ul>
+            </dd>
+            
+            <dt><dfn>Документы для сделки</dfn>:</dt>
+            <dd>
+                <ol>
+                    <li>Паспорт покупателя</li>
+                    <li>Договор купли-продажи</li>
+                    <li>Акт приема-передачи</li>
+                    <li>Квитанция об оплате</li>
+                </ol>
+            </dd>
+            
+            <dt><dfn>Сроки оформления</dfn>:</dt>
+            <dd>От <time datetime="P3D">3 дней</time> до <time datetime="P14D">2 недель</time></dd>
+        </dl>
+    </details>
+
+    {% else %}
+    <!-- Пустая корзина -->
+    <section class="card">
+        <h2>Ваша корзина пуста</h2>
+        <p>Вы еще не добавили ни одного объекта недвижимости в корзину.</p>
+        <figure>
+            <img src="https://via.placeholder.com/400x300" alt="Пустая корзина" width="400" height="300">
+            <figcaption>Начните выбирать недвижимость прямо сейчас!</figcaption>
+        </figure>
+        <nav>
+            <a href="{% url 'realty:property_list' %}" class="btn">
+                🏠 Перейти к каталогу
+            </a>
+        </nav>
+    </section>
+    {% endif %}
+
+    <!-- Рекомендации -->
+    <section class="card">
+        <h3>🌟 Рекомендуем также посмотреть</h3>
+        <p>Клиенты, которые интересовались этими объектами, также смотрели:</p>
+        <nav>
+            <ul>
+                <li><a href="{% url 'realty:property_list' %}?type=apartment">Квартиры в новостройках</a></li>
+                <li><a href="{% url 'realty:property_list' %}?type=house">Загородные дома</a></li>
+                <li><a href="{% url 'realty:property_list' %}?type=office">Офисные помещения</a></li>
+            </ul>
+        </nav>
+    </section>
+
+    <!-- Таблица сравнения с объединенными ячейками -->
+    <section class="card">
+        <h3>Сравнение способов покупки</h3>
+        <table>
+            <caption>Преимущества различных способов приобретения недвижимости</caption>
+            <thead>
+                <tr>
+                    <th scope="col">Способ</th>
+                    <th scope="col">Срок</th>
+                    <th scope="col">Первый взнос</th>
+                    <th scope="col">Преимущества</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th scope="row">Полная оплата</th>
+                    <td>1-3 дня</td>
+                    <td>100%</td>
+                    <td rowspan="2">✓ Быстрое оформление<br>✓ Скидка 5%</td>
+                </tr>
+                <tr>
+                    <th scope="row">Банковский перевод</th>
+                    <td>3-5 дней</td>
+                    <td>100%</td>
+                </tr>
+                <tr>
+                    <th scope="row">Ипотека</th>
+                    <td>14-30 дней</td>
+                    <td>от 15%</td>
+                    <td>✓ Рассрочка до 20 лет<br>✓ Налоговый вычет</td>
+                </tr>
+                <tr>
+                    <th scope="row">Рассрочка от застройщика</th>
+                    <td colspan="2">7-14 дней / от 30%</td>
+                    <td>✓ Без процентов<br>✓ До 5 лет</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+</article>
+
+<script>
+function increaseQuantity(propertyId) {
+    const input = document.getElementById('qty-' + propertyId);
+    if (input.value < 10) {
+        input.value = parseInt(input.value) + 1;
+        updateCart(propertyId, input.value);
+    }
+}
+
+function decreaseQuantity(propertyId) {
+    const input = document.getElementById('qty-' + propertyId);
+    if (input.value > 1) {
+        input.value = parseInt(input.value) - 1;
+        updateCart(propertyId, input.value);
+    }
+}
+
+function updateCart(propertyId, quantity) {
+    // Здесь будет AJAX запрос для обновления корзины
+    console.log('Обновление количества для объекта ' + propertyId + ': ' + quantity);
+}
+
+function clearCart() {
+    if (confirm('Вы уверены, что хотите очистить корзину?')) {
+        window.location.href = '{% url "realty:clear_cart" %}';
+    }
+}
+</script>
+
+{% endblock %}

@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}Покупка - {{ property.title }}{% endblock %}
+{% block content %}
+<h1>Покупка недвижимости</h1>
+
+<div class="card">
+    <h2>{{ property.title }}</h2>
+    <p><strong>Тип:</strong> {{ property.get_property_type_display }}</p>
+    <p><strong>Адрес:</strong> {{ property.address }}</p>
+    <p><strong>Площадь:</strong> {{ property.area }} м²</p>
+    <p><strong>Цена:</strong> {{ property.price|floatformat:0 }} BYN</p>
+</div>
+
+<div class="card">
+    <h3>Оформление покупки</h3>
+    
+    <form method="post">
+        {% csrf_token %}
+        
+        <div style="margin-bottom: 20px;">
+            <label for="promo_code">Промокод (если есть):</label><br>
+            <input type="text" name="promo_code" id="promo_code" placeholder="Введите промокод">
+        </div>
+        
+        {% if available_promos %}
+        <div style="background-color: #d4edda; padding: 10px; border-radius: 5px; margin-bottom: 20px;">
+            <p><strong>Доступные промокоды:</strong></p>
+            <ul>
+                {% for promo in available_promos %}
+                    {% if promo.can_use %}
+                    <li><strong>{{ promo.code }}</strong> - скидка {{ promo.discount_percent }}%</li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+        
+        <div id="price-calculation" style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin-bottom: 20px;">
+            <h4>Расчет стоимости:</h4>
+            <p>Базовая цена: <strong>{{ property.price|floatformat:0 }} BYN</strong></p>
+            <p id="discount-info" style="display: none;">Скидка: <span id="discount-amount"></span></p>
+            <p id="final-price">Итоговая цена: <strong>{{ property.price|floatformat:0 }} BYN</strong></p>
+        </div>
+        
+        <button type="submit" class="btn" style="background-color: #28a745;">Подтвердить покупку</button>
+        <a href="{% url 'realty:property_detail' property.pk %}" class="btn" style="background-color: #6c757d;">Отмена</a>
+    </form>
+</div>
+
+<script>
+// Простой калькулятор скидки
+document.getElementById('promo_code').addEventListener('input', function(e) {
+    const code = e.target.value.toUpperCase();
+    const basePrice = {{ property.price }};
+    let discount = 0;
+    
+    // Проверяем известные промокоды
+    {% for promo in available_promos %}
+    if (code === '{{ promo.code }}' && {{ promo.can_use|yesno:"true,false" }}) {
+        discount = {{ promo.discount_percent }};
+    }
+    {% endfor %}
+    
+    if (discount > 0) {
+        const discountAmount = basePrice * discount / 100;
+        const finalPrice = basePrice - discountAmount;
+        
+        document.getElementById('discount-info').style.display = 'block';
+        document.getElementById('discount-amount').textContent = `-${discountAmount.toFixed(0)} BYN (${discount}%)`;
+        document.getElementById('final-price').innerHTML = `Итоговая цена: <strong>${finalPrice.toFixed(0)} BYN</strong>`;
+    } else {
+        document.getElementById('discount-info').style.display = 'none';
+        document.getElementById('final-price').innerHTML = `Итоговая цена: <strong>${basePrice.toFixed(0)} BYN</strong>`;
+    }
+});
+</script>
+{% endblock %}

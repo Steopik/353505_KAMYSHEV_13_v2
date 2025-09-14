@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}{{ news.title }}{% endblock %}
+{% block content %}
+<article>
+    <h1>{{ news.title }}</h1>
+    
+    <div class="card">
+        <p><strong>{{ news.brief }}</strong></p>
+        
+        {% if news.image %}
+        <img src="{{ news.image }}" alt="{{ news.title }}" style="max-width: 100%; height: auto;">
+        {% endif %}
+        
+        <div style="margin: 20px 0;">
+            {{ news.content|linebreaks }}
+        </div>
+        
+        <hr>
+        
+        <div style="color: #666; font-size: 0.9em;">
+            <p>
+                <strong>Автор:</strong> 
+                {% if news.author %}
+                    {{ news.author.first_name }} {{ news.author.last_name }}
+                {% else %}
+                    Редакция
+                {% endif %}
+            </p>
+            <p><strong>Опубликовано:</strong> {{ news.published_at|date:"d/m/Y H:i" }}</p>
+            <p><strong>Просмотров:</strong> {{ news.views_count }}</p>
+        </div>
+    </div>
+    
+    {% if news.related_properties.exists %}
+    <div class="card">
+        <h3>Связанные объекты недвижимости</h3>
+        <div class="grid">
+            {% for property in news.related_properties.all %}
+            <div>
+                <h4><a href="{% url 'realty:property_detail' property.pk %}">{{ property.title }}</a></h4>
+                <p>{{ property.property_type|capfirst }}, {{ property.price|floatformat:0 }} BYN</p>
+                <p>{{ property.address }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+    
+    <div style="margin-top: 20px;">
+        <a href="{% url 'realty:news_list' %}" class="btn">← К списку новостей</a>
+        <a href="{% url 'home' %}" class="btn">На главную</a>
+    </div>
+</article>
+{% endblock %}

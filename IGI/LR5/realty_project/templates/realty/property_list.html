@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}Недвижимость{% endblock %}
+
+{% block content %}
+<h1>Объекты недвижимости</h1>
+
+<div class="card">
+    <form method="get" action="">
+        <input type="text" name="q" placeholder="Поиск..." value="{{ query }}">
+        <button type="submit" class="btn">Поиск</button>
+    </form>
+</div>
+
+<div class="grid">
+    {% for property in page_obj %}
+    <div class="card">
+        <h3>{{ property.title }}</h3>
+        <p><strong>Тип:</strong> {{ property.get_property_type_display }}</p>
+        <p><strong>Цена:</strong> {{ property.price|floatformat:0 }} BYN</p>
+        <p><strong>Площадь:</strong> {{ property.area }} м²</p>
+        <p><strong>Адрес:</strong> {{ property.address }}</p>
+        <a href="{% url 'realty:property_detail' property.pk %}" class="btn">Подробнее</a>
+        {% if property.is_available %}
+        <a href="{% url 'realty:add_to_cart' property.pk %}" class="btn" style="background-color: #ffc107;">В корзину</a>
+        {% endif %}
+    </div>
+    {% empty %}
+    <p>Нет доступных объектов</p>
+    {% endfor %}
+</div>
+{% endblock %}

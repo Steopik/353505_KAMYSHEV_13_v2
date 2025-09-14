@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Часто задаваемые вопросы{% endblock %}
+
+{% block content %}
+<article>
+    <header>
+        <h1>Часто задаваемые вопросы</h1>
+    </header>
+
+    <!-- Форма поиска -->
+    <section class="card">
+        <form method="get" action="">
+            <input type="search"
+                   name="q"
+                   placeholder="Поиск по вопросам..."
+                   value="{{ query }}"
+                   aria-label="Поиск вопросов">
+            <button type="submit" class="btn">🔍 Поиск</button>
+        </form>
+    </section>
+
+    <!-- Список вопросов -->
+    <section>
+        {% for faq in faqs %}
+        <details class="card">
+            <summary style="cursor: pointer; padding: 10px; font-weight: bold;">
+                <strong>{{ faq.question }}</strong>
+                <small style="float: right; color: #666;">
+                    <time datetime="{{ faq.added_at|date:'c' }}">
+                        {{ faq.added_at|date:"d/m/Y" }}
+                    </time>
+                </small>
+            </summary>
+            <div style="padding: 15px; background-color: #f9f9f9;">
+                {{ faq.answer|linebreaks }}
+                <hr>
+                <nav>
+                    <a href="{% url 'realty:faq_detail' faq.pk %}" class="btn">
+                        📖 Читать подробнее
+                    </a>
+                </nav>
+            </div>
+        </details>
+        {% empty %}
+        <p>Пока нет часто задаваемых вопросов.</p>
+        {% endfor %}
+    </section>
+
+    <!-- Статистика -->
+    {% if faqs %}
+    <aside class="card" style="margin-top: 20px; text-align: center;">
+        <p>Всего вопросов: <strong>{{ faqs|length }}</strong></p>
+    </aside>
+    {% endif %}
+
+    <!-- Навигация -->
+    <nav style="margin-top: 20px;">
+        <a href="{% url 'home' %}" class="btn">← На главную</a>
+        <a href="{% url 'realty:contacts' %}" class="btn">📞 Задать вопрос</a>
+    </nav>
+</article>
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Удаление объекта{% endblock %}
+{% block content %}
+<h1>Удаление объекта недвижимости</h1>
+
+<div class="card">
+    <h3>Вы уверены, что хотите удалить этот объект?</h3>
+    
+    <div style="background-color: #f8d7da; padding: 15px; border-radius: 5px; margin: 20px 0;">
+        <h4>{{ property.title }}</h4>
+        <p><strong>Тип:</strong> {{ property.get_property_type_display }}</p>
+        <p><strong>Адрес:</strong> {{ property.address }}</p>
+        <p><strong>Цена:</strong> {{ property.price|floatformat:0 }} BYN</p>
+    </div>
+    
+    <p style="color: #721c24;"><strong>Внимание!</strong> Это действие нельзя отменить.</p>
+    
+    <form method="post" style="display: inline;">
+        {% csrf_token %}
+        <button type="submit" class="btn" style="background-color: #dc3545;">Удалить</button>
+    </form>
+    
+    <a href="{% url 'realty:property_detail' property.pk %}" class="btn" style="background-color: #6c757d;">Отмена</a>
+</div>
+{% endblock %}

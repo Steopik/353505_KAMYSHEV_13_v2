@@ -1,0 +1,292 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}О компании - Недвижимость Минск{% endblock %}
+
+{% block content %}
+<article>
+    <header>
+        <h1>О компании «Недвижимость Минск»</h1>
+    </header>
+
+    <!-- Видео презентация компании -->
+    <section class="card">
+        <h2>🎥 Видео о нас</h2>
+        <figure>
+            <video width="100%" 
+                   height="400" 
+                   controls 
+                   poster="https://via.placeholder.com/800x400"
+                   preload="metadata">
+                <source src="{% static 'videos/company-presentation.mp4' %}" type="video/mp4">
+                <!-- Fallback для браузеров без поддержки video -->
+                <p>Ваш браузер не поддерживает HTML5 видео. 
+                   <a href="{% static 'videos/company-presentation.mp4' %}" download>Скачать видео</a>.</p>
+            </video>
+            <figcaption>Презентация компании «Недвижимость Минск» - лидера рынка недвижимости Беларуси</figcaption>
+        </figure>
+    </section>
+
+    <!-- Аудио приветствие директора -->
+    <section class="card">
+        <h2>🎙️ Приветственное слово директора</h2>
+        <figure>
+            <audio controls preload="none">
+                <source src="{% static 'audio/director-greeting.mp3' %}" type="audio/mpeg">
+                <!-- Fallback -->
+                <p>Ваш браузер не поддерживает аудио элемент. 
+                   <a href="{% static 'audio/director-greeting.mp3' %}" download>Скачать аудио</a>.</p>
+            </audio>
+            <figcaption>
+                <cite>Иван Петрович Сидоров</cite>, Генеральный директор
+            </figcaption>
+        </figure>
+        <blockquote>
+            <p><q>Мы создаем не просто агентство недвижимости, а надежного партнера для каждого клиента.</q></p>
+        </blockquote>
+    </section>
+
+    {% if company %}
+    <section class="card" itemscope itemtype="http://schema.org/RealEstateAgent">
+        <h2 itemprop="name">{{ company.title }}</h2>
+        <p itemprop="description">{{ company.description }}</p>
+        
+        <!-- История компании по годам -->
+        <details open>
+            <summary style="cursor: pointer; list-style: none;">
+                <h3 style="display: inline;">📜 История компании</h3>
+            </summary>
+            <dl>
+                <dt><time datetime="2010">2010 год</time></dt>
+                <dd>Основание компании. Первый офис на <mark>3 сотрудника</mark>.</dd>
+                
+                <dt><time datetime="2015">2015 год</time></dt>
+                <dd>Открытие филиалов в <em>Гомеле</em> и <em>Бресте</em>. Штат вырос до <data value="25">25 человек</data>.</dd>
+                
+                <dt><time datetime="2018">2018 год</time></dt>
+                <dd>Запуск онлайн-платформы. Внедрение <abbr title="Customer Relationship Management">CRM</abbr> системы.</dd>
+                
+                <dt><time datetime="2020">2020 год</time></dt>
+                <dd>Лидер рынка недвижимости Беларуси. Более <strong>1000 успешных сделок</strong> в год.</dd>
+                
+                <dt><time datetime="2024">2024 год</time></dt>
+                <dd>Интеграция <abbr title="Artificial Intelligence">AI</abbr> технологий. Запуск мобильного приложения.</dd>
+            </dl>
+        </details>
+        
+        <!-- Реквизиты компании -->
+        <details>
+            <summary style="cursor: pointer; list-style: none;">
+                <h3 style="display: inline;">📋 Реквизиты и сертификаты</h3>
+            </summary>
+            <pre>
+<code>ООО «Недвижимость Минск»
+УНП: 123456789
+ОКПО: 987654321
+Юридический адрес: 220030, г. Минск, ул. Независимости, д. 58
+Расчетный счет: BY12 UNBS 3012 0123 4567 8901 2345
+Банк: ОАО «БПС-Сбербанк»
+БИК: BPSBBY2X
+
+Лицензия №02240/123 от 01.01.2020
+Выдана Министерством юстиции Республики Беларусь
+Срок действия: бессрочно</code>
+            </pre>
+            
+            <!-- Сертификат без стилей -->
+            <h4>Сертификат качества ISO 9001:2015</h4>
+            <pre style="font-family: monospace; background: none; border: none;">
+╔══════════════════════════════════════════════╗
+║          СЕРТИФИКАТ СООТВЕТСТВИЯ             ║
+║                                              ║
+║  Настоящим удостоверяется, что система      ║
+║  менеджмента качества ООО «Недвижимость     ║
+║  Минск» соответствует требованиям           ║
+║  СТБ ISO 9001-2015                          ║
+║                                              ║
+║  Регистрационный №: BY/112 05.01.123        ║
+║  Дата выдачи: 01.01.2023                    ║
+║  Действителен до: 31.12.2025                ║
+║                                              ║
+║  Председатель комиссии: _____________        ║
+║                         И.И. Иванов          ║
+╚══════════════════════════════════════════════╝
+            </pre>
+        </details>
+        
+        <!-- Контактная информация -->
+        <h3>📞 Контакты</h3>
+        <address itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">
+            <p><strong>Адрес:</strong> 
+                <span itemprop="streetAddress">{{ company.address|default:"ул. Независимости, 58" }}</span>,
+                <span itemprop="addressLocality">Минск</span>,
+                <span itemprop="postalCode">220030</span>
+            </p>
+            <p><strong>Телефон:</strong> 
+                <a href="tel:{{ company.phone }}" itemprop="telephone">{{ company.phone }}</a>
+            </p>
+            <p><strong>Email:</strong> 
+                <a href="mailto:{{ company.email }}" itemprop="email">{{ company.email }}</a>
+            </p>
+        </address>
+    </section>
+    {% endif %}
+
+    <!-- Наши ценности с использованием figure -->
+    <section class="card">
+        <h2>💎 Наши ценности</h2>
+        <div class="grid">
+            <figure>
+                <img src="https://via.placeholder.com/200x150" alt="Надежность" width="200" height="150">
+                <figcaption><strong>Надежность</strong> - Мы гарантируем безопасность каждой сделки</figcaption>
+            </figure>
+            <figure>
+                <img src="https://via.placeholder.com/200x150" alt="Профессионализм" width="200" height="150">
+                <figcaption><strong>Профессионализм</strong> - Команда сертифицированных экспертов</figcaption>
+            </figure>
+            <figure>
+                <img src="https://via.placeholder.com/200x150" alt="Инновации" width="200" height="150">
+                <figcaption><strong>Инновации</strong> - Современные технологии на службе клиентов</figcaption>
+            </figure>
+        </div>
+    </section>
+
+    <!-- Команда -->
+    <section>
+        <h2>👥 Наша команда</h2>
+        <div class="grid">
+            {% for agent in agents %}
+            <article class="card" itemscope itemtype="http://schema.org/Person">
+                <figure>
+                    <img src="https://via.placeholder.com/150x150" 
+                         alt="Фото {{ agent.user.first_name }} {{ agent.user.last_name }}"
+                         width="150" 
+                         height="150"
+                         itemprop="image">
+                    <figcaption>
+                        <h4 itemprop="name">{{ agent.user.first_name }} {{ agent.user.last_name }}</h4>
+                    </figcaption>
+                </figure>
+                
+                <dl>
+                    <dt>Должность:</dt>
+                    <dd itemprop="jobTitle">{{ agent.department|default:"Агент по недвижимости" }}</dd>
+                    
+                    <dt>Опыт работы:</dt>
+                    <dd><time datetime="P{{ agent.experience_years }}Y">{{ agent.experience_years }} лет</time></dd>
+                    
+                    <dt>Телефон:</dt>
+                    <dd><a href="tel:{{ agent.phone }}" itemprop="telephone">{{ agent.phone }}</a></dd>
+                    
+                    <dt>Специализация:</dt>
+                    <dd>{{ agent.specialization|default:"Все виды недвижимости" }}</dd>
+                </dl>
+                
+                {% if agent.bio %}
+                <blockquote>
+                    <p itemprop="description">{{ agent.bio }}</p>
+                </blockquote>
+                {% endif %}
+                
+                <!-- Рейтинг агента -->
+                <p>Рейтинг: <meter value="{{ agent.rating|default:4.5 }}" min="0" max="5">{{ agent.rating|default:4.5 }}/5</meter></p>
+            </article>
+            {% empty %}
+            <p>Информация о сотрудниках будет добавлена позже.</p>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- Офис на карте через iframe -->
+    <section class="card">
+        <h2>📍 Наш офис на карте</h2>
+        <figure>
+            <iframe 
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2350.5419764685!2d27.559039!3d53.904541!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x46dbcfdb31e22b87%3A0x9c4cef5e66c7a8a2!2z0J3QtdC30LDQstC40YHQuNC80L7RgdGC0LgsINCc0LjQvdGB0Lo!5e0!3m2!1sru!2sby!4v1234567890"
+                width="100%"
+                height="400"
+                style="border:0;"
+                allowfullscreen=""
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade"
+                title="Расположение офиса Недвижимость Минск">
+            </iframe>
+            <figcaption>
+                Мы находимся в самом центре Минска, на проспекте Независимости, 58<br>
+                <small>Ближайшее метро: Площадь Якуба Коласа (5 минут пешком)</small>
+            </figcaption>
+        </figure>
+    </section>
+
+    <!-- YouTube видео через iframe -->
+    <section class="card">
+        <h2>📺 Виртуальный тур по офису</h2>
+        <figure>
+            <iframe width="100%" 
+                    height="400" 
+                    src="https://www.youtube.com/embed/dQw4w9WgXcQ" 
+                    title="Виртуальный тур по офису Недвижимость Минск"
+                    frameborder="0" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                    allowfullscreen>
+            </iframe>
+            <figcaption>Совершите виртуальную экскурсию по нашему современному офису</figcaption>
+        </figure>
+    </section>
+
+    <!-- Достижения и награды -->
+    <section class="card">
+        <h2>🏆 Наши достижения</h2>
+        <table>
+            <caption>Награды и достижения компании за последние годы</caption>
+            <thead>
+                <tr>
+                    <th scope="col">Год</th>
+                    <th scope="col">Награда</th>
+                    <th scope="col">Организатор</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th scope="row"><time datetime="2024">2024</time></th>
+                    <td>🥇 Лучшее агентство недвижимости</td>
+                    <td>Ассоциация риелторов Беларуси</td>
+                </tr>
+                <tr>
+                    <th scope="row"><time datetime="2023">2023</time></th>
+                    <td>🏅 Компания года в сфере недвижимости</td>
+                    <td>Министерство жилищно-коммунального хозяйства</td>
+                </tr>
+                <tr>
+                    <th scope="row"><time datetime="2022">2022</time></th>
+                    <td>⭐ Выбор клиентов</td>
+                    <td>Портал Realt.by</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <!-- Сертификат качества как изображение -->
+    <section class="card">
+        <h2>📜 Наш сертификат качества</h2>
+        <figure style="text-align: center;">
+            <img src="{% static 'images/certificate.png' %}"
+                 alt="Сертификат соответствия ISO 9001:2015"
+                 width="600"
+                 height="800"
+                 style="border: 2px solid #ddd; box-shadow: 0 4px 8px rgba(0,0,0,0.1);"
+                 onerror="this.src='https://via.placeholder.com/600x800?text=Сертификат+ISO+9001:2015'">
+            <figcaption>
+                <strong>Сертификат соответствия системы менеджмента качества ISO 9001:2015</strong><br>
+                <small>Выдан: 01.01.2023 | Действителен до: 31.12.2025</small><br>
+                <small>Регистрационный №: BY/112 05.01.123</small>
+            </figcaption>
+        </figure>
+        <p style="text-align: center; margin-top: 20px;">
+            <em>Данный сертификат подтверждает, что система менеджмента качества<br>
+            ООО «Недвижимость Минск» соответствует требованиям международного стандарта<br>
+            ISO 9001:2015 в области оказания риелторских услуг.</em>
+        </p>
+    </section>
+</article>
+
+{% endblock %}

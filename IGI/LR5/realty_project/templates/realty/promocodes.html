@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Промокоды{% endblock %}
+{% block content %}
+<h1>Промокоды и купоны</h1>
+
+<div class="card">
+    <h2>Активные промокоды</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Код</th>
+                <th>Скидка</th>
+                <th>Действует до</th>
+                <th>Осталось использований</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for promo in active_promos %}
+            <tr>
+                <td><strong>{{ promo.code }}</strong></td>
+                <td>{{ promo.discount_percent }}%</td>
+                <td>{{ promo.valid_to|date:"d/m/Y" }}</td>
+                <td>{{ promo.uses|add:"-"|add:promo.used_count }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4">Нет активных промокодов</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="card">
+    <h2>Архив промокодов</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Код</th>
+                <th>Скидка</th>
+                <th>Статус</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for promo in archived_promos %}
+            <tr>
+                <td>{{ promo.code }}</td>
+                <td>{{ promo.discount_percent }}%</td>
+                <td>Неактивен</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="3">Архив пуст</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

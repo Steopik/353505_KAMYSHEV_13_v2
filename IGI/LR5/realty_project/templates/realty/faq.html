@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Часто задаваемые вопросы{% endblock %}
+{% block content %}
+<h1>Часто задаваемые вопросы</h1>
+
+{% for date, faqs in faqs_by_date.items %}
+<div class="card">
+    <h3>Добавлено: {{ date }}</h3>
+    {% for faq in faqs %}
+    <details style="margin: 10px 0;">
+        <summary style="cursor: pointer; font-weight: bold;">{{ faq.question }}</summary>
+        <p style="margin-top: 10px;">{{ faq.answer }}</p>
+    </details>
+    {% endfor %}
+</div>
+{% empty %}
+<p>Вопросов пока нет</p>
+{% endfor %}
+{% endblock %}
