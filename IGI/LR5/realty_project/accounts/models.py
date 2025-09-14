@@ -1,8 +1,17 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.core.validators import RegexValidator
-import datetime
+from django.core.exceptions import ValidationError
+from datetime import date
 from django.utils import timezone
+
+
+def validate_age_18_plus(value):
+    if value:
+        today = date.today()
+        age = today.year - value.year - ((today.month, today.day) < (value.month, value.day))
+        if age < 18:
+            raise ValidationError('Возраст должен быть не менее 18 лет')
 
 
 class UserManager(BaseUserManager):
@@ -18,6 +27,7 @@ class UserManager(BaseUserManager):
     def create_superuser(self, email, password, **extra_fields):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
+        extra_fields.setdefault('is_active', True)
 
         return self.create_user(email, password, **extra_fields)
 
@@ -27,7 +37,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     first_name = models.CharField('Имя', max_length=50)
     middle_name = models.CharField('Отчество', max_length=50, blank=True, null=True)
     last_name = models.CharField('Фамилия', max_length=50)
-    birth_date = models.DateField('Дата рождения', null=True)
+    birth_date = models.DateField('Дата рождения', null=True, validators=[validate_age_18_plus])
     avatar = models.ImageField('Аватар', upload_to='avatars/', null=True, blank=True)
     is_active = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)

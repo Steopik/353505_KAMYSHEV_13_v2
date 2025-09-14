@@ -3,9 +3,6 @@ from django.contrib.auth import login as auth_login, authenticate
 from .forms import RegisterForm
 from .models import User
 import random
-import requests
-from django.conf import settings
-import datetime
 from django.utils import timezone
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.forms import AuthenticationForm
@@ -15,6 +12,9 @@ from django.contrib.auth.decorators import login_required
 from .forms import AvatarUploadForm
 from datetime import timedelta
 from realty.models import Buyer
+import logging
+
+logger = logging.getLogger('project')
 
 
 def register(request):
@@ -34,22 +34,13 @@ def register(request):
                 'budget': str(form.cleaned_data.get('budget')) if form.cleaned_data.get('budget') else None,
             }
 
-            # Отправляем код через микросервис
-            try:
-                response = requests.post(
-                    settings.NOTIFICATIONS_URL,
-                    json={
-                        "emails": [user.email],
-                        "message": f"Ваш код подтверждения: {code}",
-                        "channels": ["email"]
-                    }
-                )
-                if response.status_code != 200:
-                    user.delete()
-                    return render(request, 'error.html', {'error': 'Не удалось отправить код подтверждения.'})
-            except Exception as e:
-                user.delete()
-                return render(request, 'error.html', {'error': str(e)})
+            # Выводим код подтверждения в консоль
+            print("\n" + "="*50)
+            print(f"КОД ПОДТВЕРЖДЕНИЯ ДЛЯ {user.email}: {code}")
+            print("="*50 + "\n")
+            
+            # Также логируем для записи в файл
+            logger.info(f"Код подтверждения для {user.email}: {code}")
 
             return redirect('confirm_email', user_id=user.id)
     else:

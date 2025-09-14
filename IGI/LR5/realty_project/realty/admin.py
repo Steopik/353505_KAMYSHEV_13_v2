@@ -1,11 +1,12 @@
 from django.contrib import admin
-from .models import Property, Owner, Buyer, Sale, Agent, CompanyInfo, FAQ, Vacancy, Review, PromoCode
+from .models import Property, Owner, Buyer, Sale, Agent, CompanyInfo, FAQ, Vacancy, Review, PromoCode, News, Partner
 
 @admin.register(Property)
 class PropertyAdmin(admin.ModelAdmin):
     list_display = ('title', 'property_type', 'price', 'owner', 'is_available')
     search_fields = ('title', 'address')
     list_filter = ('property_type', 'is_available')
+    filter_horizontal = ('showing_agents',)
 
 
 @admin.register(Owner)
@@ -76,3 +77,20 @@ class PromoCodeAdmin(admin.ModelAdmin):
     list_display = ('code', 'discount_percent', 'is_active', 'valid_to')
     search_fields = ('code',)
     list_filter = ('is_active', 'valid_to')
+
+
+@admin.register(News)
+class NewsAdmin(admin.ModelAdmin):
+    list_display = ('title', 'author', 'published_at', 'is_published', 'views_count')
+    search_fields = ('title', 'brief', 'content')
+    list_filter = ('is_published', 'published_at')
+    date_hierarchy = 'published_at'
+    filter_horizontal = ('related_properties',)
+
+
+@admin.register(Partner)
+class PartnerAdmin(admin.ModelAdmin):
+    list_display = ('name', 'website_url', 'is_active', 'order')
+    search_fields = ('name', 'description')
+    list_filter = ('is_active',)
+    ordering = ('order', 'name')

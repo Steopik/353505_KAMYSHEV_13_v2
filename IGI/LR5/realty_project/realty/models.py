@@ -3,9 +3,24 @@ from django.contrib.auth import get_user_model
 from django.utils import timezone
 from django.db.models.signals import post_delete
 from django.dispatch import receiver
+from django.core.validators import RegexValidator
+from django.core.exceptions import ValidationError
+from datetime import date
 
 
 User = get_user_model()
+
+# Валидаторы
+phone_validator = RegexValidator(
+    regex=r'^\+375 \((29|25|44|33)\) \d{3}-\d{2}-\d{2}$',
+    message='Номер телефона должен быть в формате: +375 (29) XXX-XX-XX'
+)
+
+def validate_age_18_plus(value):
+    today = date.today()
+    age = today.year - value.year - ((today.month, today.day) < (value.month, value.day))
+    if age < 18:
+        raise ValidationError('Возраст должен быть не менее 18 лет')
 
 
 class Property(models.Model):
@@ -35,6 +50,14 @@ class Property(models.Model):
         blank=True,
         related_name='managed_properties'
     )
+    
+    # ManyToMany: несколько агентов могут показывать один объект
+    showing_agents = models.ManyToManyField(
+        'Agent',
+        related_name='showing_properties',
+        blank=True,
+        verbose_name='Агенты для показа'
+    )
 
     def __str__(self):
         return self.title
@@ -42,7 +65,7 @@ class Property(models.Model):
 
 class Owner(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, verbose_name='Пользователь')
-    phone = models.CharField('Телефон', max_length=17)
+    phone = models.CharField('Телефон', max_length=17, validators=[phone_validator])
     passport = models.CharField('Паспорт', max_length=20)
     address = models.TextField('Адрес регистрации')
 
@@ -56,7 +79,7 @@ class Buyer(models.Model):
         on_delete=models.CASCADE,
         related_name='buyer_profile'
     )
-    phone = models.CharField('Телефон', max_length=17)
+    phone = models.CharField('Телефон', max_length=17, validators=[phone_validator])
     budget = models.DecimalField('Бюджет', max_digits=12, decimal_places=2, null=True, blank=True)
 
     def __str__(self):
@@ -69,7 +92,7 @@ class Agent(models.Model):
         on_delete=models.CASCADE,
         related_name='agent_profile'
     )
-    phone = models.CharField('Телефон', max_length=17)
+    phone = models.CharField('Телефон', max_length=17, validators=[phone_validator])
     department = models.CharField('Отдел', max_length=100)
     experience_years = models.PositiveIntegerField('Стаж, лет')
     bio = models.TextField('Описание', blank=True, null=True)
@@ -176,6 +199,25 @@ class Review(models.Model):
         ordering = ['-created_at']
 
 
+class Partner(models.Model):
+    """Компании-партнеры"""
+    name = models.CharField('Название компании', max_length=200)
+    logo_url = models.URLField('URL логотипа', max_length=500, blank=True)
+    website_url = models.URLField('Сайт компании', max_length=500)
+    description = models.TextField('Описание', blank=True)
+    is_active = models.BooleanField('Активный партнер', default=True)
+    created_at = models.DateTimeField('Добавлен', auto_now_add=True)
+    order = models.IntegerField('Порядок отображения', default=0)
+
+    class Meta:
+        verbose_name = 'Партнер'
+        verbose_name_plural = 'Партнеры'
+        ordering = ['order', 'name']
+
+    def __str__(self):
+        return self.name
+
+
 class PromoCode(models.Model):
     code = models.CharField('Промокод', max_length=50, unique=True)
     discount_percent = models.DecimalField('Процент скидки', max_digits=5, decimal_places=2)
@@ -205,3 +247,36 @@ class PromoCode(models.Model):
         if self.used_count >= self.uses and self.uses > 0:
             return False
         return True
+
+
+class News(models.Model):
+    title = models.CharField('Заголовок', max_length=255)
+    brief = models.CharField('Краткое содержание', max_length=255)
+    content = models.TextField('Полный текст')
+    image = models.ImageField('Изображение', upload_to='news/', null=True, blank=True)
+    author = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='news_articles'
+    )
+    published_at = models.DateTimeField('Дата публикации', default=timezone.now)
+    is_published = models.BooleanField('Опубликовано', default=True)
+    views_count = models.PositiveIntegerField('Количество просмотров', default=0)
+    
+    # ManyToMany: новость может быть связана с несколькими объектами недвижимости
+    related_properties = models.ManyToManyField(
+        Property,
+        related_name='news',
+        blank=True,
+        verbose_name='Связанные объекты'
+    )
+
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        verbose_name = 'Новость'
+        verbose_name_plural = 'Новости'
+        ordering = ['-published_at']
