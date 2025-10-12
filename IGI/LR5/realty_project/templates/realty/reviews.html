@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Отзывы{% endblock %}
+{% block content %}
+<h1>Отзывы</h1>
+
+<div class="card">
+    <h3>Общий рейтинг: {{ avg_rating }}/5</h3>
+    <p>Всего отзывов: {{ reviews|length }}</p>
+</div>
+
+{% if user.is_authenticated %}
+<div class="card">
+    <h3>Добавить отзыв</h3>
+    <form method="post">
+        {% csrf_token %}
+        <div>
+            <label>Оценка:</label>
+            <select name="rating" required>
+                <option value="5">5 - Отлично</option>
+                <option value="4">4 - Хорошо</option>
+                <option value="3">3 - Нормально</option>
+                <option value="2">2 - Плохо</option>
+                <option value="1">1 - Ужасно</option>
+            </select>
+        </div>
+        <div>
+            <label>Текст отзыва:</label><br>
+            <textarea name="text" rows="4" cols="50" required></textarea>
+        </div>
+        <button type="submit" class="btn">Отправить отзыв</button>
+    </form>
+</div>
+{% else %}
+<div class="card">
+    <p>Для добавления отзыва необходимо <a href="{% url 'login' %}">войти</a></p>
+</div>
+{% endif %}
+
+<h2>Все отзывы</h2>
+{% for review in reviews %}
+<div class="card">
+    <h4>{{ review.user.email }} - {{ review.rating }}/5</h4>
+    <p>{{ review.text }}</p>
+    <p><small>{{ review.created_at|date:"d/m/Y H:i" }}</small></p>
+</div>
+{% empty %}
+<p>Отзывов пока нет</p>
+{% endfor %}
+{% endblock %}

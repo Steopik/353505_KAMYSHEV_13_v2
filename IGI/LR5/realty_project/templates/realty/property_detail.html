@@ -1,0 +1,253 @@
+{% extends "base.html" %}
+{% block title %}{{ property.title }}{% endblock %}
+{% block og_title %}{{ property.title }} - {{ property.price|floatformat:0 }} BYN{% endblock %}
+{% block og_description %}{{ property.description|truncatewords:20 }}{% endblock %}
+
+{% block content %}
+<!-- Микроразметка для продукта -->
+<article itemscope itemtype="http://schema.org/Product">
+    <header>
+        <h1 itemprop="name">{{ property.title }}</h1>
+    </header>
+
+    <!-- Навигация по странице -->
+    <nav class="card">
+        <h3 style="color: #333;">Быстрая навигация</h3>
+        <ul style="list-style: none; padding: 0;">
+            <li><a href="#description" style="color: #007bff; text-decoration: none;">📝 Описание</a></li>
+            <li><a href="#specs" style="color: #007bff; text-decoration: none;">📊 Характеристики</a></li>
+            <li><a href="#price" style="color: #007bff; text-decoration: none;">💰 Цена</a></li>
+            <li><a href="#contacts" style="color: #007bff; text-decoration: none;">📞 Контакты</a></li>
+            <li><a href="#similar" style="color: #007bff; text-decoration: none;">🏠 Похожие объекты</a></li>
+        </ul>
+    </nav>
+
+    <div class="grid">
+        <section class="card" id="specs">
+            <h2>Информация об объекте</h2>
+            <dl>
+                <dt><dfn>Тип недвижимости</dfn>:</dt>
+                <dd itemprop="category">{{ property.get_property_type_display }}</dd>
+                
+                <dt>Адрес:</dt>
+                <dd><address itemprop="address">{{ property.address }}</address></dd>
+                
+                <dt>Площадь:</dt>
+                <dd>{{ property.area }} <abbr title="квадратных метров">м²</abbr></dd>
+                
+                <dt>Количество комнат:</dt>
+                <dd><data value="{{ property.rooms_count }}">{{ property.rooms_count|default:"Не указано" }}</data></dd>
+                
+                <dt>Этаж:</dt>
+                <dd><data value="{{ property.floor }}">{{ property.floor|default:"—" }}</data> из <data value="{{ property.floors_total }}">{{ property.floors_total|default:"—" }}</data></dd>
+                
+                <dt>Год постройки:</dt>
+                <dd><time datetime="{{ property.year_built }}">{{ property.year_built|default:"Не указан" }}</time></dd>
+            </dl>
+
+            <p><strong>Статус:</strong>
+                {% if property.is_available %}
+                    <mark style="background-color: #d4edda; color: green;">✓ Доступно</mark>
+                {% else %}
+                    <s style="color: red;">✗ Продано</s>
+                {% endif %}
+            </p>
+        </section>
+
+        <section class="card" id="price">
+            <h2>Цена</h2>
+            <div itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+                <p style="font-size: 24px; font-weight: bold;">
+                    <span itemprop="price">{{ property.price|floatformat:0 }}</span> 
+                    <span itemprop="priceCurrency">BYN</span>
+                </p>
+                <p>≈ <data value="{{ property.price_usd }}">{{ property.price_usd|floatformat:0 }} <abbr title="United States Dollar">USD</abbr></data></p>
+                <p>≈ <data value="{{ property.price_eur }}">{{ property.price_eur|floatformat:0 }} <abbr title="Euro">EUR</abbr></data></p>
+                <link itemprop="availability" href="http://schema.org/{% if property.is_available %}InStock{% else %}OutOfStock{% endif %}" />
+
+                {% if property.is_available %}
+                    <button onclick="location.href='{% url 'realty:buy_property' property.pk %}'" class="btn" style="background-color: #28a745;">🛒 Купить</button>
+                    <a href="{% url 'realty:add_to_cart' property.pk %}" class="btn" style="background-color: #ffc107;">➕ В корзину</a>
+                {% endif %}
+                {% if user.is_authenticated and user == property.owner or user.is_superuser %}
+                    <a href="{% url 'realty:property_update' property.pk %}" class="btn">✏️ Редактировать</a>
+                    <a href="{% url 'realty:property_delete' property.pk %}" class="btn" style="background-color: #dc3545;">🗑️ Удалить</a>
+                {% endif %}
+            </div>
+        </section>
+    </div>
+
+    <!-- Описание с семантической разметкой -->
+    <section class="card" id="description">
+        <h2>Описание</h2>
+        <p itemprop="description">{{ property.description|default:"Описание не предоставлено"|linebreaks }}</p>
+        
+        <!-- Добавляем примерный текст с различными элементами -->
+        <details>
+            <summary>Дополнительная информация</summary>
+            <p>Этот объект недвижимости соответствует стандартам <abbr title="Строительные нормы и правила">СНиП</abbr> и имеет все необходимые документы.</p>
+            <p>Энергоэффективность: класс <kbd>A+</kbd></p>
+            <p>Код объекта: <code>PROP-{{ property.pk }}-2024</code></p>
+        </details>
+
+        {% if property.owner %}
+        <p><strong>Владелец:</strong> <var>{{ property.owner.email }}</var></p>
+        {% endif %}
+        
+        <!-- Контактная информация -->
+        <div id="contacts">
+            <h3>Контакты для связи</h3>
+            <address>
+                📧 Email: <a href="mailto:info@realty.by?subject=Объект {{ property.pk }}">info@realty.by</a><br>
+                📞 Телефон: <a href="tel:+375291234567">+375 (29) 123-45-67</a><br>
+                💬 Telegram: <a href="https://t.me/realty_minsk" target="_blank">@realty_minsk</a>
+            </address>
+        </div>
+
+        {% if property.agent %}
+        <div itemscope itemtype="http://schema.org/Person">
+            <p><strong>Агент:</strong> 
+                <span itemprop="name">{{ property.agent.user.first_name }} {{ property.agent.user.last_name }}</span>
+                {% if property.agent.phone %}
+                    | <a href="tel:{{ property.agent.phone }}" itemprop="telephone">{{ property.agent.phone }}</a>
+                {% endif %}
+            </p>
+        </div>
+        {% endif %}
+    </section>
+
+    <!-- Таблица с техническими характеристиками -->
+    <section class="card">
+        <h3>Технические характеристики</h3>
+        <table>
+            <caption>Подробные характеристики объекта</caption>
+            <colgroup>
+                <col style="background-color: #f8f9fa;">
+                <col>
+            </colgroup>
+            <thead>
+                <tr>
+                    <th scope="col">Параметр</th>
+                    <th scope="col">Значение</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th scope="row">Общая площадь</th>
+                    <td>{{ property.area }} м²</td>
+                </tr>
+                <tr>
+                    <th scope="row">Жилая площадь</th>
+                    <td>{{ property.area|floatformat:0|add:"-10" }} м²</td>
+                </tr>
+                <tr>
+                    <th scope="row">Площадь кухни</th>
+                    <td>12 м²</td>
+                </tr>
+                <tr>
+                    <th scope="row">Высота потолков</th>
+                    <td>2.7 м</td>
+                </tr>
+                <tr>
+                    <th scope="row">Материал стен</th>
+                    <td>Кирпич</td>
+                </tr>
+                <tr>
+                    <th scope="row">Отопление</th>
+                    <td>Центральное</td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th scope="row" colspan="2">Дата обновления: <time datetime="{{ property.updated_at|date:'c' }}">{{ property.updated_at|date:"d.m.Y" }}</time></th>
+                </tr>
+            </tfoot>
+        </table>
+    </section>
+
+    {% if related_news %}
+    <section class="card">
+        <h3>Связанные новости</h3>
+        <div class="grid">
+            {% for news in related_news %}
+            <article>
+                <h4><a href="{% url 'realty:news_detail' news.pk %}">{{ news.title }}</a></h4>
+                <p>{{ news.brief }}</p>
+                <footer>
+                    <time datetime="{{ news.published_at|date:'c' }}">{{ news.published_at|date:"d/m/Y" }}</time>
+                </footer>
+            </article>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    {% if similar_properties %}
+    <section class="card" id="similar">
+        <h3>Похожие объекты</h3>
+        <div class="grid">
+            {% for prop in similar_properties %}
+            <article class="card">
+                <h4><a href="{% url 'realty:property_detail' prop.pk %}">{{ prop.title }}</a></h4>
+                <p>{{ prop.price|floatformat:0 }} BYN</p>
+                <p>{{ prop.area }} м²</p>
+                <p>{{ prop.address }}</p>
+            </article>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Пример с картой через iframe -->
+    <section class="card">
+        <h3>Расположение на карте</h3>
+        <figure>
+            <iframe 
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2350.5419764685!2d27.559039!3d53.904541!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x46dbcfdb31e22b87%3A0x9c4cef5e66c7a8a2!2z0J3QtdC30LDQstC40YHQuNC80L7RgdGC0LgsINCc0LjQvdGB0Lo!5e0!3m2!1sru!2sby!4v1234567890"
+                width="100%"
+                height="300"
+                style="border:0;"
+                allowfullscreen=""
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade"
+                title="Карта расположения объекта">
+            </iframe>
+            <figcaption>📍 Местоположение: {{ property.address }}</figcaption>
+        </figure>
+    </section>
+
+    <!-- Форма быстрого вопроса -->
+    <section class="card">
+        <h3>Задать вопрос об объекте</h3>
+        <form method="post" action="#">
+            <fieldset>
+                <legend>Контактная форма</legend>
+                
+                <label for="name">Ваше имя: <abbr title="обязательное поле">*</abbr></label><br>
+                <input type="text" id="name" name="name" required placeholder="Иван Иванов" autocomplete="name"><br><br>
+                
+                <label for="email">Email: <abbr title="обязательное поле">*</abbr></label><br>
+                <input type="email" id="email" name="email" required placeholder="example@mail.ru" autocomplete="email"><br><br>
+                
+                <label for="phone">Телефон:</label><br>
+                <input type="tel" id="phone" name="phone" pattern="\+375 \((29|25|44|33)\) [0-9]{3}-[0-9]{2}-[0-9]{2}" 
+                       placeholder="+375 (29) 123-45-67" autocomplete="tel"><br><br>
+                
+                <label for="message">Сообщение: <abbr title="обязательное поле">*</abbr></label><br>
+                <textarea id="message" name="message" rows="4" cols="50" required 
+                          placeholder="Ваш вопрос об объекте..." maxlength="500"></textarea><br><br>
+                
+                <label for="contact-time">Удобное время для связи:</label><br>
+                <input type="time" id="contact-time" name="contact-time" min="09:00" max="18:00"><br><br>
+                
+                <label for="contact-date">Дата звонка:</label><br>
+                <input type="date" id="contact-date" name="contact-date" min="{{ 'now'|date:'Y-m-d' }}"><br><br>
+                
+                <button type="submit" class="btn">📨 Отправить вопрос</button>
+            </fieldset>
+        </form>
+    </section>
+
+</article>
+
+{% endblock %}

@@ -1,0 +1,181 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}О компании - Недвижимость Минск{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Логотип с трансформацией -->
+    <section class="text-center">
+        <img src="https://via.placeholder.com/300x150?text=LOGO" alt="Логотип" class="company-logo logo-3d">
+        <h1 class="company-name">Недвижимость Минск</h1>
+        <p class="text-smallcaps">Ваш надежный партнер с 2010 года</p>
+    </section>
+
+    <!-- Сертификат с границами из изображений -->
+    <section class="certificate">
+        <h2 class="certificate-title">Сертификат качества</h2>
+        <p class="text-center text-advanced">
+            Настоящим удостоверяется, что агентство "Недвижимость Минск"
+            соответствует всем стандартам качества и имеет лицензию на осуществление
+            риэлторской деятельности на территории Республики Беларусь.
+        </p>
+        <p class="text-center">
+            <strong>Лицензия №:</strong> 12345-67890<br>
+            <strong>Дата выдачи:</strong> 01.01.2020<br>
+            <strong>Действительна до:</strong> 31.12.2025
+        </p>
+    </section>
+
+    <!-- История компании по годам -->
+    <section class="card">
+        <h2 class="text-uppercase">История компании</h2>
+        <ul class="styled-list check-list">
+            <li><strong>2010</strong> - Основание компании</li>
+            <li><strong>2012</strong> - Открытие первого офиса в центре Минска</li>
+            <li><strong>2015</strong> - Расширение штата до 50 сотрудников</li>
+            <li><strong>2018</strong> - Запуск онлайн-платформы для поиска недвижимости</li>
+            <li><strong>2020</strong> - Получение международного сертификата качества</li>
+            <li><strong>2023</strong> - Лидер рынка недвижимости в Минске</li>
+        </ul>
+    </section>
+
+    <!-- Реквизиты компании -->
+    <section class="card">
+        <h2>Реквизиты</h2>
+        <div class="text-content">
+            <p>
+                <strong class="text-smallcaps">Полное наименование:</strong>
+                ООО "Недвижимость Минск"
+            </p>
+            <p>
+                <strong class="text-smallcaps">УНП:</strong>
+                <mark>192345678</mark>
+            </p>
+            <p>
+                <strong class="text-smallcaps">Юридический адрес:</strong>
+                220030, г. Минск, ул. Независимости, д. 58, офис 401
+            </p>
+            <p>
+                <strong class="text-smallcaps">Банковские реквизиты:</strong><br>
+                р/с BY12 BLBB 3012 0192 3456 7800 1001<br>
+                в ОАО "Белинвестбанк", г. Минск<br>
+                БИК: BLBBBY2X
+            </p>
+        </div>
+    </section>
+
+    <!-- Видео о компании -->
+    <section class="card">
+        <h2>Видео о нас</h2>
+        <video width="100%" controls poster="https://via.placeholder.com/800x450?text=Видео+о+компании">
+            <source src="{% static 'videos/company-presentation.mp4' %}" type="video/mp4">
+            Ваш браузер не поддерживает видео.
+        </video>
+    </section>
+
+    <!-- Аудио презентация -->
+    <section class="card">
+        <h2>Аудио презентация</h2>
+        <audio controls style="width: 100%;">
+            <source src="{% static 'audio/director-greeting.mp3' %}" type="audio/mpeg">
+            Ваш браузер не поддерживает аудио.
+        </audio>
+    </section>
+
+    <!-- Миссия и ценности -->
+    <section class="card">
+        <h2 class="text-capitalize">Наша миссия</h2>
+        <article>
+            <p class="text-content">
+                Мы стремимся сделать процесс покупки и продажи недвижимости максимально
+                простым, прозрачным и безопасным для наших клиентов. Наша команда
+                профессионалов готова помочь вам на каждом этапе сделки.
+            </p>
+        </article>
+
+        <h3 class="text-smallcaps">Наши ценности</h3>
+        <ul class="star-list">
+            <li>Честность и прозрачность</li>
+            <li>Профессионализм</li>
+            <li>Индивидуальный подход</li>
+            <li>Конфиденциальность</li>
+            <li>Результативность</li>
+        </ul>
+    </section>
+
+    <!-- Команда -->
+    <section class="card">
+        <h2>Наша команда</h2>
+        <div class="contacts-container">
+            <div class="contact-card">
+                <img src="https://via.placeholder.com/200x200?text=CEO" alt="Директор" class="contact-photo">
+                <div class="contact-info">
+                    <h3>Иван Иванов</h3>
+                    <p class="text-smallcaps">Генеральный директор</p>
+                    <p>Опыт работы: 15 лет</p>
+                </div>
+            </div>
+            <div class="contact-card">
+                <img src="https://via.placeholder.com/200x200?text=Manager" alt="Менеджер" class="contact-photo">
+                <div class="contact-info">
+                    <h3>Мария Петрова</h3>
+                    <p class="text-smallcaps">Руководитель отдела продаж</p>
+                    <p>Опыт работы: 10 лет</p>
+                </div>
+            </div>
+            <div class="contact-card">
+                <img src="https://via.placeholder.com/200x200?text=Lawyer" alt="Юрист" class="contact-photo">
+                <div class="contact-info">
+                    <h3>Петр Сидоров</h3>
+                    <p class="text-smallcaps">Главный юрист</p>
+                    <p>Опыт работы: 12 лет</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Достижения -->
+    <section class="card">
+        <h2>Наши достижения</h2>
+        <table>
+            <caption>Показатели за последние годы</caption>
+            <thead>
+                <tr>
+                    <th>Год</th>
+                    <th>Количество сделок</th>
+                    <th>Довольных клиентов</th>
+                    <th>Рейтинг</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>2021</td>
+                    <td>450</td>
+                    <td>98%</td>
+                    <td>4.8/5</td>
+                </tr>
+                <tr>
+                    <td>2022</td>
+                    <td>520</td>
+                    <td>99%</td>
+                    <td>4.9/5</td>
+                </tr>
+                <tr>
+                    <td>2023</td>
+                    <td>610</td>
+                    <td>99.5%</td>
+                    <td>4.95/5</td>
+                </tr>
+                <tr>
+                    <td>2024</td>
+                    <td>380*</td>
+                    <td></td>
+                    <td>5.0/5</td>
+                </tr>
+            </tbody>
+        </table>
+        <p><small>* Данные на текущий момент</small></p>
+    </section>
+</div>
+{% endblock %}

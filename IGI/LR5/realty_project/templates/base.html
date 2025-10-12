@@ -37,135 +37,40 @@
     <meta itemprop="url" content="http://localhost:8000/">
     
     <title>{% block title %}Недвижимость Минск{% endblock %}</title>
-    
+
+    <!-- Подключение CSS стилей -->
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+
+    <!-- Стиль для автоматического скрытия прелоадера -->
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
+        /* Автоматическое скрытие прелоадера через 2 секунды с помощью CSS анимации */
+        .preloader {
+            animation: fadeOut 0.5s ease-out 2s forwards;
         }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        nav {
-            background-color: #333;
-            color: white;
-            padding: 1rem;
-        }
-        nav ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
-        }
-        nav a {
-            color: white;
-            text-decoration: none;
-        }
-        nav a:hover {
-            text-decoration: underline;
-        }
-        .messages {
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 5px;
-        }
-        .success {
-            background-color: #d4edda;
-            color: #155724;
-        }
-        .error {
-            background-color: #f8d7da;
-            color: #721c24;
-        }
-        .card {
-            background: white;
-            padding: 20px;
-            margin: 10px 0;
-            border-radius: 5px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        th, td {
-            padding: 10px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-        .btn {
-            display: inline-block;
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            border: none;
-            cursor: pointer;
-        }
-        .btn:hover {
-            background-color: #0056b3;
-        }
-        .weather-info, .currency-info {
-            display: inline-block;
-            margin: 10px;
-            padding: 10px;
-            background: #e9ecef;
-            border-radius: 5px;
-        }
-        .vertical-nav {
-            background: white;
-            padding: 15px;
-            border-radius: 5px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            color: #333 !important;
-        }
-        .vertical-nav * {
-            color: #333 !important;
-        }
-        .vertical-nav ul {
-            list-style: none;
-            padding: 0;
-        }
-        .vertical-nav li {
-            margin: 10px 0;
-            color: #333 !important;
-        }
-        .vertical-nav a {
-            color: #333 !important;
-            text-decoration: none;
-        }
-        .vertical-nav a:hover {
-            color: #007bff !important;
-            text-decoration: underline;
-        }
-        aside {
-            color: #333 !important;
-        }
-        aside * {
-            color: inherit !important;
-        }
-        aside a:hover {
-            color: #007bff !important;
+
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                visibility: hidden;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- Прелоадер с пульсирующими точками -->
+    <div class="preloader" id="preloader">
+        <div class="preloader-dots">
+            <div class="dot dot-1"></div>
+            <div class="dot dot-2"></div>
+            <div class="dot dot-3"></div>
+        </div>
+    </div>
+
     <!-- Семантическая разметка HTML5 -->
     <header role="banner">
         <!-- Горизонтальная навигация -->
-        <nav role="navigation" aria-label="Основная навигация">
+        <nav class="main-nav" role="navigation" aria-label="Основная навигация">
             <div class="container">
                 <ul>
                     <li><a href="{% url 'home' %}" accesskey="h">Главная</a></li>

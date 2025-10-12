@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}Новости{% endblock %}
+{% block content %}
+<div class="container">
+    <h1 class="text-uppercase text-center">Новости</h1>
+
+    <div class="card">
+        <form method="get" action="">
+            <div class="form-group">
+                <input type="text" name="q" placeholder="Поиск новостей..." value="{{ query }}" required>
+                <button type="submit" class="btn btn-primary">Поиск</button>
+            </div>
+        </form>
+    </div>
+
+    {% for news in page_obj %}
+    <article class="card">
+        <div style="display: flex; gap: 20px;">
+            <!-- Картинка новости -->
+            <figure style="flex: 0 0 200px;">
+                <img src="{% if news.image %}{{ news.image }}{% else %}https://via.placeholder.com/200x150?text=Новость{% endif %}"
+                     alt="{{ news.title }}"
+                     width="200"
+                     height="150"
+                     style="object-fit: cover; border-radius: 8px;">
+            </figure>
+
+            <!-- Контент новости с overflow и многоточием -->
+            <div style="flex: 1;">
+                <header>
+                    <h3 class="text-capitalize">{{ news.title }}</h3>
+                </header>
+                <div class="news-summary">
+                    <p><strong>{{ news.brief }}</strong></p>
+                </div>
+                {% if news.author %}
+                <p>Автор: <cite>{{ news.author.first_name }} {{ news.author.last_name }}</cite></p>
+                {% endif %}
+                <footer>
+                    <p>
+                        <small>
+                            <time datetime="{{ news.published_at|date:'c' }}">
+                                {{ news.published_at|date:"d/m/Y H:i" }}
+                            </time>
+                            | Просмотров: {{ news.views_count }}
+                        </small>
+                    </p>
+                    <a href="{% url 'realty:news_detail' news.pk %}" class="btn btn-primary">Читать далее →</a>
+                </footer>
+            </div>
+        </div>
+    </article>
+{% empty %}
+<p>Новостей пока нет</p>
+{% endfor %}
+
+    {% if page_obj.has_other_pages %}
+    <div class="text-center" style="margin: 20px;">
+        {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}&q={{ query }}" class="btn">&laquo; Назад</a>
+        {% endif %}
+
+        <span>Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}</span>
+
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}&q={{ query }}" class="btn">Вперед &raquo;</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

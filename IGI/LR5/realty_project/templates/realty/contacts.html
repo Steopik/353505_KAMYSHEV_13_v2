@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+{% block title %}Контакты{% endblock %}
+{% block content %}
+<div class="container">
+    <h1 class="text-center text-uppercase">Контакты</h1>
+
+    {% if company %}
+    <div class="card">
+        <h2 class="text-capitalize">Наш офис</h2>
+        <p><strong>Адрес:</strong> {{ company.address }}</p>
+        <p><strong>Телефон:</strong> <a href="tel:{{ company.phone }}">{{ company.phone }}</a></p>
+        <p><strong>Email:</strong> <a href="mailto:{{ company.email }}">{{ company.email }}</a></p>
+    </div>
+    {% else %}
+    <div class="card">
+        <h2 class="text-capitalize">Наш офис</h2>
+        <p><strong>Адрес:</strong> г. Минск, ул. Независимости, 58</p>
+        <p><strong>Телефон:</strong> <a href="tel:+375291234567">+375 29 123-45-67</a></p>
+        <p><strong>Email:</strong> <a href="mailto:info@realty.by">info@realty.by</a></p>
+    </div>
+    {% endif %}
+
+    <h2 class="text-center text-capitalize">Наша команда</h2>
+    <!-- Flexbox контейнер для сотрудников -->
+    <div class="contacts-container">
+        {% for agent in agents %}
+        <div class="contact-card">
+            <img src="https://via.placeholder.com/200x200?text={{ agent.user.first_name|slice:':1' }}{{ agent.user.last_name|slice:':1' }}"
+                 alt="{{ agent.user.last_name }} {{ agent.user.first_name }}"
+                 class="contact-photo">
+            <div class="contact-info">
+                <h3>{{ agent.user.last_name }} {{ agent.user.first_name }}</h3>
+                <p class="text-smallcaps">{{ agent.department }}</p>
+                <p><strong>Телефон:</strong> <a href="tel:{{ agent.phone }}">{{ agent.phone }}</a></p>
+                <p><strong>Email:</strong> <a href="mailto:{{ agent.user.email }}">{{ agent.user.email }}</a></p>
+                <p><strong>Опыт работы:</strong> {{ agent.experience_years }} лет</p>
+                <p class="text-content">Специализация: продажа и аренда недвижимости, консультации по вопросам оформления документов.</p>
+            </div>
+        </div>
+        {% empty %}
+        <!-- Заглушка с сотрудниками -->
+        <div class="contact-card">
+            <img src="https://via.placeholder.com/200x200?text=АИ" alt="Александр Иванов" class="contact-photo">
+            <div class="contact-info">
+                <h3>Александр Иванов</h3>
+                <p class="text-smallcaps">Ведущий риэлтор</p>
+                <p><strong>Телефон:</strong> <a href="tel:+375291111111">+375 29 111-11-11</a></p>
+                <p><strong>Email:</strong> <a href="mailto:ivanov@realty.by">ivanov@realty.by</a></p>
+                <p><strong>Опыт работы:</strong> 10 лет</p>
+                <p class="text-content">Специализация: элитная недвижимость, коммерческая недвижимость.</p>
+            </div>
+        </div>
+        <div class="contact-card">
+            <img src="https://via.placeholder.com/200x200?text=ЕП" alt="Елена Петрова" class="contact-photo">
+            <div class="contact-info">
+                <h3>Елена Петрова</h3>
+                <p class="text-smallcaps">Менеджер по работе с клиентами</p>
+                <p><strong>Телефон:</strong> <a href="tel:+375292222222">+375 29 222-22-22</a></p>
+                <p><strong>Email:</strong> <a href="mailto:petrova@realty.by">petrova@realty.by</a></p>
+                <p><strong>Опыт работы:</strong> 7 лет</p>
+                <p class="text-content">Специализация: квартиры в новостройках, ипотечное кредитование.</p>
+            </div>
+        </div>
+        <div class="contact-card">
+            <img src="https://via.placeholder.com/200x200?text=ДС" alt="Дмитрий Сидоров" class="contact-photo">
+            <div class="contact-info">
+                <h3>Дмитрий Сидоров</h3>
+                <p class="text-smallcaps">Юрисконсульт</p>
+                <p><strong>Телефон:</strong> <a href="tel:+375293333333">+375 29 333-33-33</a></p>
+                <p><strong>Email:</strong> <a href="mailto:sidorov@realty.by">sidorov@realty.by</a></p>
+                <p><strong>Опыт работы:</strong> 12 лет</p>
+                <p class="text-content">Специализация: юридическое сопровождение сделок, проверка документов.</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Форма обратной связи -->
+    <section class="card">
+        <h2 class="text-center">Свяжитесь с нами</h2>
+        <form method="post" action="">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="name">Ваше имя:</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="phone">Телефон:</label>
+                <input type="tel" id="phone" name="phone" pattern="[+]375[0-9]{9}" title="Формат: +375XXXXXXXXX">
+            </div>
+            <div class="form-group">
+                <label for="message">Сообщение:</label>
+                <textarea id="message" name="message" rows="5" required></textarea>
+            </div>
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" name="consent" required>
+                    Я согласен на обработку персональных данных
+                </label>
+            </div>
+            <button type="submit" class="btn btn-primary">Отправить сообщение</button>
+        </form>
+    </section>
+
+    <!-- Карта -->
+    <section class="card">
+        <h2 class="text-center">Мы на карте</h2>
+        <iframe
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2350.5974537798213!2d27.547365!3d53.9045!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x46dbcfb7f8c9d2b9%3A0x4c5d8c6b5e5e5e5e!2sIndependence%20Ave%2058%2C%20Minsk%2C%20Belarus!5e0!3m2!1sen!2sus!4v1234567890"
+            width="100%"
+            height="450"
+            style="border:0; border-radius: 10px;"
+            allowfullscreen=""
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade">
+        </iframe>
+    </section>
+</div>
+{% endblock %}
