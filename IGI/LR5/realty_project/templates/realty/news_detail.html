@@ -1,19 +1,24 @@
 {% extends "base.html" %}
 {% block title %}{{ news.title }}{% endblock %}
 {% block content %}
-<article>
-    <h1>{{ news.title }}</h1>
-    
-    <div class="card">
-        <p><strong>{{ news.brief }}</strong></p>
-        
-        {% if news.image %}
-        <img src="{{ news.image }}" alt="{{ news.title }}" style="max-width: 100%; height: auto;">
-        {% endif %}
-        
-        <div style="margin: 20px 0;">
-            {{ news.content|linebreaks }}
-        </div>
+<div class="container">
+    <article>
+        <h1 class="text-capitalize">{{ news.title }}</h1>
+
+        <div class="card">
+            <p class="text-content important"><strong>{{ news.brief }}</strong></p>
+
+            {% if news.image %}
+            <figure class="text-center">
+                <img src="{{ news.image }}" alt="{{ news.title }}" style="max-width: 100%; height: auto; border-radius: 10px;">
+                <figcaption><em>{{ news.title }}</em></figcaption>
+            </figure>
+            {% endif %}
+
+            <!-- Многоколоночный макет для текста статьи -->
+            <div class="news-article">
+                {{ news.content|linebreaks }}
+            </div>
         
         <hr>
         
@@ -46,9 +51,10 @@
     </div>
     {% endif %}
     
-    <div style="margin-top: 20px;">
-        <a href="{% url 'realty:news_list' %}" class="btn">← К списку новостей</a>
-        <a href="{% url 'home' %}" class="btn">На главную</a>
-    </div>
-</article>
+        <div style="margin-top: 20px;">
+            <a href="{% url 'realty:news_list' %}" class="btn">← К списку новостей</a>
+            <a href="{% url 'home' %}" class="btn">На главную</a>
+        </div>
+    </article>
+</div>
 {% endblock %}

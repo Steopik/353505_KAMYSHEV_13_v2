@@ -6,13 +6,77 @@
 {% block og_description %}Агентство недвижимости №1 в Минске. Квартиры, дома, офисы по лучшим ценам{% endblock %}
 
 {% block content %}
-<!-- Логотип компании и рекламный баннер -->
-<section id="hero" itemscope itemtype="http://schema.org/RealEstateAgent">
-    <figure style="text-align: center;">
-        <img src="{% static 'images/logo.png' %}" alt="Логотип Недвижимость Минск" itemprop="logo" width="200" height="100"
+<!-- Анимация дома (вариант 13) -->
+<div class="house-animation-container">
+    <div class="sky">
+        <!-- Облака -->
+        <div class="cloud cloud-1"></div>
+        <div class="cloud cloud-2"></div>
+        <div class="cloud cloud-3"></div>
+    </div>
+
+    <!-- Дом -->
+    <div class="house">
+        <!-- Крыша -->
+        <div class="roof"></div>
+
+        <!-- Стены дома -->
+        <div class="house-body">
+            <!-- Окна -->
+            <div class="window window-1">
+                <div class="window-light"></div>
+            </div>
+            <div class="window window-2">
+                <div class="window-light"></div>
+            </div>
+            <div class="window window-3">
+                <div class="window-light"></div>
+            </div>
+            <div class="window window-4">
+                <div class="window-light"></div>
+            </div>
+
+            <!-- Дверь -->
+            <div class="door-container">
+                <div class="door">
+                    <div class="door-knob"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Сад с деревьями -->
+    <div class="garden">
+        <div class="tree tree-1">
+            <div class="trunk"></div>
+            <div class="leaves"></div>
+        </div>
+        <div class="tree tree-2">
+            <div class="trunk"></div>
+            <div class="leaves"></div>
+        </div>
+        <div class="tree tree-3">
+            <div class="trunk"></div>
+            <div class="leaves"></div>
+        </div>
+    </div>
+
+    <!-- Рекламный слоган -->
+    <div class="slogan">
+        <h2>Ваш дом мечты ждет вас!</h2>
+        <p>Недвижимость Минск - открываем двери в будущее</p>
+    </div>
+</div>
+
+<!-- Hero секция с анимацией -->
+<section class="hero-section" id="hero" itemscope itemtype="http://schema.org/RealEstateAgent">
+    <figure class="text-center">
+        <img src="{% static 'images/logo.png' %}" alt="Логотип Недвижимость Минск" class="company-logo logo-3d" itemprop="logo" width="200" height="100"
              onerror="this.src='https://via.placeholder.com/200x100?text=LOGO'">
-        <figcaption itemprop="name"><strong>Недвижимость Минск</strong> - Ваш надежный партнер</figcaption>
+        <figcaption itemprop="name" class="company-name">Недвижимость Минск</figcaption>
     </figure>
+    <h1 class="hero-title text-center">Ваш надежный партнер в мире недвижимости</h1>
+    <button class="btn btn-primary hero-button">Начать поиск</button>
 
     <!-- Карусель рекламных баннеров -->
     <div class="card">
@@ -38,8 +102,8 @@
 <!-- Стихотворение о недвижимости с переносами -->
 <section class="card">
     <h3>Наш девиз</h3>
-    <blockquote cite="internal">
-        <p>
+    <article>
+        <p class="text-content text-advanced">
             Мы найдем для вас жилье,<br>
             Что станет вашим навсегда.<br>
             Квартира, дом иль гараж —<wbr>
@@ -50,7 +114,17 @@
             Мечты сбываются легко,<br>
             Когда есть мы на пути!
         </p>
-    </blockquote>
+    </article>
+
+    <!-- Пример важного текста с псевдоэлементом ::before -->
+    <p class="important">Все сделки проходят юридическую проверку</p>
+
+    <!-- Список с кастомными маркерами -->
+    <ul class="custom-list styled-list">
+        <li>Быстрое оформление документов</li>
+        <li>Полное юридическое сопровождение</li>
+        <li>Гарантия безопасности сделки</li>
+    </ul>
 </section>
 
 <div class="grid">
@@ -75,9 +149,9 @@
         </section>
     </article>
 
-    <!-- Последняя новость -->
+    <!-- Последняя новость с позиционированием -->
     {% if latest_news %}
-    <article class="card">
+    <article class="card latest-article">
         <h3>Последняя новость</h3>
         <header>
             <h4>{{ latest_news.title }}</h4>
@@ -97,23 +171,37 @@
     {{ calendar_html|safe }}
 </section>
 
-<!-- Каталог услуг -->
+<!-- Каталог услуг с Grid Layout -->
 <section id="services" class="card">
-    <h2>Наши услуги</h2>
-    <nav>
-        <ul>
-            <li id="apartments"><dfn>Продажа квартир</dfn> - Большой выбор квартир в новостройках и вторичном рынке</li>
-            <li id="houses"><dfn>Продажа домов</dfn> - Загородные дома и коттеджи для вашей семьи</li>
-            <li id="offices"><dfn>Коммерческая недвижимость</dfn> - Офисы и торговые помещения</li>
-            <li id="land"><dfn>Земельные участки</dfn> - Участки под строительство и ведение хозяйства</li>
-        </ul>
-    </nav>
+    <h2 class="text-uppercase">Наши услуги</h2>
+    <div class="property-grid">
+        <article class="property-card">
+            <img src="https://via.placeholder.com/300x200?text=Квартиры" alt="Квартиры">
+            <h3>Продажа квартир</h3>
+            <p>Большой выбор квартир в новостройках</p>
+        </article>
+        <article class="property-card">
+            <img src="https://via.placeholder.com/300x200?text=Дома" alt="Дома">
+            <h3>Продажа домов</h3>
+            <p>Загородные дома и коттеджи</p>
+        </article>
+        <article class="property-card">
+            <img src="https://via.placeholder.com/300x200?text=Офисы" alt="Офисы">
+            <h3>Коммерческая недвижимость</h3>
+            <p>Офисы и торговые помещения</p>
+        </article>
+        <article class="property-card">
+            <img src="https://via.placeholder.com/300x200?text=Земля" alt="Земля">
+            <h3>Земельные участки</h3>
+            <p>Участки под строительство</p>
+        </article>
+    </div>
 </section>
 
 <!-- Рекомендуемые объекты с микроразметкой -->
 <section>
-    <h2>Рекомендуемые объекты</h2>
-    <div class="grid">
+    <h2 class="text-capitalize">Рекомендуемые объекты</h2>
+    <div class="property-grid">
         {% for property in featured_properties %}
         <article class="card" itemscope itemtype="http://schema.org/Product">
             <h3 itemprop="name">{{ property.title }}</h3>
@@ -131,23 +219,29 @@
     </div>
 </section>
 
-<!-- Партнеры с логотипами из БД -->
+<!-- Партнеры с круглыми блоками -->
 <section class="card">
-    <h2>Наши партнеры</h2>
-    <div class="grid">
+    <h2 class="text-center">Наши партнеры</h2>
+    <div class="partners-list">
         {% for partner in partners %}
-        <figure itemscope itemtype="http://schema.org/Organization">
+        <div class="partner-item" itemscope itemtype="http://schema.org/Organization">
             <a href="{{ partner.website_url }}" target="_blank" rel="noopener" itemprop="url">
-                <img src="{% if partner.logo_url %}{{ partner.logo_url }}{% else %}https://via.placeholder.com/150x80?text={{ partner.name|urlencode }}{% endif %}"
-                     alt="{{ partner.name }}" itemprop="logo" width="150" height="80">
+                <span itemprop="name">{{ partner.name }}</span>
             </a>
-            <figcaption itemprop="name">{{ partner.name }}</figcaption>
-            {% if partner.description %}
-            <small>{{ partner.description }}</small>
-            {% endif %}
-        </figure>
+        </div>
         {% empty %}
-        <p>Информация о партнерах скоро появится</p>
+        <div class="partner-item">
+            <span>Белинвестбанк</span>
+        </div>
+        <div class="partner-item">
+            <span>Белгазпромбанк</span>
+        </div>
+        <div class="partner-item">
+            <span>Альфа-Банк</span>
+        </div>
+        <div class="partner-item">
+            <span>Минстройархитектуры</span>
+        </div>
         {% endfor %}
     </div>
 </section>
@@ -172,10 +266,14 @@ console.log(`Ежемесячный платеж: ${monthlyPayment} BYN`);</code
 
 <!-- Цитата -->
 <section class="card">
-    <h3>Мнение эксперта</h3>
-    <blockquote cite="https://example.com/expert">
+    <h3 class="text-smallcaps">Мнение эксперта</h3>
+    <blockquote cite="https://example.com/expert" lang="ru">
         <p><q>Инвестиции в недвижимость — это не просто покупка квадратных метров, это инвестиции в будущее вашей семьи.</q></p>
         <footer>— <cite>Иван Петров, эксперт по недвижимости</cite></footer>
+    </blockquote>
+    <blockquote cite="https://example.com/expert2" lang="en">
+        <p><q>Real estate investment is the best long-term strategy.</q></p>
+        <footer>— <cite>John Smith, Real Estate Expert</cite></footer>
     </blockquote>
 </section>
 

@@ -1,18 +1,144 @@
 {% extends "base.html" %}
 {% block title %}Вакансии{% endblock %}
 {% block content %}
-<h1>Вакансии</h1>
+<div class="container">
+    <h1 class="text-center text-uppercase">Вакансии</h1>
+    <p class="text-center text-content">Присоединяйтесь к нашей команде профессионалов!</p>
 
-{% for vacancy in vacancies %}
-<div class="card">
-    <h3>{{ vacancy.title }}</h3>
-    <p>{{ vacancy.description }}</p>
-    {% if vacancy.salary %}
-    <p><strong>Зарплата:</strong> {{ vacancy.salary|floatformat:0 }} BYN</p>
-    {% endif %}
-    <p><small>Опубликовано: {{ vacancy.published_at|date:"d/m/Y" }}</small></p>
+    <!-- Контейнер для плавающих блоков -->
+    <div class="vacancies-container">
+        {% for vacancy in vacancies %}
+        <div class="vacancy-item">
+            <h3 class="text-capitalize">{{ vacancy.title }}</h3>
+            <p class="text-content">{{ vacancy.description }}</p>
+            {% if vacancy.salary %}
+            <p><strong>Зарплата:</strong> <mark>{{ vacancy.salary|floatformat:0 }} BYN</mark></p>
+            {% endif %}
+            <p><small>Опубликовано: {{ vacancy.published_at|date:"d/m/Y" }}</small></p>
+            <a href="#apply" class="btn btn-primary">Откликнуться</a>
+        </div>
+        {% empty %}
+        <!-- Заглушки вакансий -->
+        <div class="vacancy-item">
+            <h3 class="text-capitalize">Риэлтор по продаже недвижимости</h3>
+            <p class="text-content">
+                Ищем опытного специалиста по продаже недвижимости.
+                Требования: опыт работы от 2 лет, знание рынка недвижимости Минска,
+                коммуникабельность, ориентация на результат.
+            </p>
+            <p><strong>Зарплата:</strong> <mark>от 2000 BYN</mark></p>
+            <ul class="styled-list">
+                <li>Полный рабочий день</li>
+                <li>Офис в центре города</li>
+                <li>Обучение и карьерный рост</li>
+            </ul>
+            <a href="#apply" class="btn btn-primary">Откликнуться</a>
+        </div>
+
+        <div class="vacancy-item">
+            <h3 class="text-capitalize">Менеджер по работе с клиентами</h3>
+            <p class="text-content">
+                Приглашаем менеджера для работы с клиентской базой.
+                Обязанности: консультирование клиентов, подбор объектов,
+                организация показов, сопровождение сделок.
+            </p>
+            <p><strong>Зарплата:</strong> <mark>от 1500 BYN</mark></p>
+            <ul class="styled-list">
+                <li>График 5/2</li>
+                <li>Корпоративное обучение</li>
+                <li>Дружный коллектив</li>
+            </ul>
+            <a href="#apply" class="btn btn-primary">Откликнуться</a>
+        </div>
+
+        <div class="vacancy-item">
+            <h3 class="text-capitalize">Юрист по недвижимости</h3>
+            <p class="text-content">
+                Требуется юрист для сопровождения сделок с недвижимостью.
+                Требования: высшее юридическое образование, опыт работы от 3 лет,
+                знание законодательства в области недвижимости.
+            </p>
+            <p><strong>Зарплата:</strong> <mark>от 2500 BYN</mark></p>
+            <ul class="styled-list">
+                <li>Официальное трудоустройство</li>
+                <li>Социальный пакет</li>
+                <li>Премии по результатам работы</li>
+            </ul>
+            <a href="#apply" class="btn btn-primary">Откликнуться</a>
+        </div>
+
+        <div class="vacancy-item">
+            <h3 class="text-capitalize">Стажер-риэлтор</h3>
+            <p class="text-content">
+                Приглашаем стажеров для обучения профессии риэлтора.
+                Требования: желание развиваться в сфере недвижимости,
+                коммуникабельность, обучаемость.
+            </p>
+            <p><strong>Зарплата:</strong> <mark>от 800 BYN</mark></p>
+            <ul class="styled-list">
+                <li>Бесплатное обучение</li>
+                <li>Наставничество</li>
+                <li>Возможность карьерного роста</li>
+            </ul>
+            <a href="#apply" class="btn btn-primary">Откликнуться</a>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Форма отклика на вакансию -->
+    <section class="card" id="apply">
+        <h2 class="text-center">Откликнуться на вакансию</h2>
+        <form method="post" action="" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="vacancy">Выберите вакансию:</label>
+                <select id="vacancy" name="vacancy" required>
+                    <option value="">-- Выберите вакансию --</option>
+                    <option value="realtor">Риэлтор по продаже недвижимости</option>
+                    <option value="manager">Менеджер по работе с клиентами</option>
+                    <option value="lawyer">Юрист по недвижимости</option>
+                    <option value="intern">Стажер-риэлтор</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="fullname">ФИО:</label>
+                <input type="text" id="fullname" name="fullname" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="phone">Телефон:</label>
+                <input type="tel" id="phone" name="phone" required>
+            </div>
+            <div class="form-group">
+                <label for="experience">Опыт работы (лет):</label>
+                <input type="number" id="experience" name="experience" min="0" max="50" value="0">
+            </div>
+            <div class="form-group">
+                <label for="cv">Резюме (PDF):</label>
+                <input type="file" id="cv" name="cv" accept=".pdf">
+            </div>
+            <div class="form-group">
+                <label for="message">Сопроводительное письмо:</label>
+                <textarea id="message" name="message" rows="5"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Отправить отклик</button>
+        </form>
+    </section>
+
+    <!-- Преимущества работы у нас -->
+    <section class="card">
+        <h2 class="text-center">Почему стоит работать у нас?</h2>
+        <ul class="star-list styled-list">
+            <li>Стабильная заработная плата и бонусы</li>
+            <li>Профессиональное обучение и развитие</li>
+            <li>Дружный и профессиональный коллектив</li>
+            <li>Современный офис в центре города</li>
+            <li>Корпоративные мероприятия</li>
+            <li>Возможности карьерного роста</li>
+        </ul>
+    </section>
 </div>
-{% empty %}
-<p>Вакансий пока нет</p>
-{% endfor %}
 {% endblock %}
