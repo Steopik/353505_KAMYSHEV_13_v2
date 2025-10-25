@@ -13,46 +13,46 @@
         </form>
     </div>
 
+    <div class="news-grid">
     {% for news in page_obj %}
-    <article class="card">
-        <div style="display: flex; gap: 20px;">
-            <!-- Картинка новости -->
-            <figure style="flex: 0 0 200px;">
-                <img src="{% if news.image %}{{ news.image }}{% else %}https://via.placeholder.com/200x150?text=Новость{% endif %}"
-                     alt="{{ news.title }}"
-                     width="200"
-                     height="150"
-                     style="object-fit: cover; border-radius: 8px;">
-            </figure>
+    <article class="card news-card">
+        <!-- Картинка новости -->
+        <figure class="news-figure">
+            <img src="{% if news.image %}{{ news.image }}{% else %}https://via.placeholder.com/200x150?text=Новость{% endif %}"
+                 alt="{{ news.title }}"
+                 width="200"
+                 height="150"
+                 style="object-fit: cover; border-radius: 8px; width: 100%;">
+        </figure>
 
-            <!-- Контент новости с overflow и многоточием -->
-            <div style="flex: 1;">
-                <header>
-                    <h3 class="text-capitalize">{{ news.title }}</h3>
-                </header>
-                <div class="news-summary">
-                    <p><strong>{{ news.brief }}</strong></p>
-                </div>
-                {% if news.author %}
-                <p>Автор: <cite>{{ news.author.first_name }} {{ news.author.last_name }}</cite></p>
-                {% endif %}
-                <footer>
-                    <p>
-                        <small>
-                            <time datetime="{{ news.published_at|date:'c' }}">
-                                {{ news.published_at|date:"d/m/Y H:i" }}
-                            </time>
-                            | Просмотров: {{ news.views_count }}
-                        </small>
-                    </p>
-                    <a href="{% url 'realty:news_detail' news.pk %}" class="btn btn-primary">Читать далее →</a>
-                </footer>
+        <!-- Контент новости с overflow и многоточием -->
+        <div class="news-content">
+            <header>
+                <h3 class="text-capitalize">{{ news.title }}</h3>
+            </header>
+            <div class="news-summary">
+                <p><strong>{{ news.brief }}</strong></p>
             </div>
+            {% if news.author %}
+            <p>Автор: <cite>{{ news.author.first_name }} {{ news.author.last_name }}</cite></p>
+            {% endif %}
+            <footer>
+                <p>
+                    <small>
+                        <time datetime="{{ news.published_at|date:'c' }}">
+                            {{ news.published_at|date:"d/m/Y H:i" }}
+                        </time>
+                        | Просмотров: {{ news.views_count }}
+                    </small>
+                </p>
+                <a href="{% url 'realty:news_detail' news.pk %}" class="btn btn-primary">Читать далее →</a>
+            </footer>
         </div>
     </article>
 {% empty %}
 <p>Новостей пока нет</p>
 {% endfor %}
+    </div>
 
     {% if page_obj.has_other_pages %}
     <div class="text-center" style="margin: 20px;">
