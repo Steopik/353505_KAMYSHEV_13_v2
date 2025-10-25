@@ -5,20 +5,21 @@
     <article>
         <h1 class="text-capitalize">{{ news.title }}</h1>
 
-        <div class="card">
+        <div class="card clearfix">
             <p class="text-content important"><strong>{{ news.brief }}</strong></p>
 
             {% if news.image %}
-            <figure class="text-center">
-                <img src="{{ news.image }}" alt="{{ news.title }}" style="max-width: 100%; height: auto; border-radius: 10px;">
-                <figcaption><em>{{ news.title }}</em></figcaption>
-            </figure>
+            <!-- Изображение с обтеканием текстом -->
+            <img src="{{ news.image }}" alt="{{ news.title }}" class="float-left">
             {% endif %}
 
             <!-- Многоколоночный макет для текста статьи -->
             <div class="news-article">
                 {{ news.content|linebreaks }}
             </div>
+
+            <!-- Очистка обтекания -->
+            <div class="clear"></div>
         
         <hr>
         
