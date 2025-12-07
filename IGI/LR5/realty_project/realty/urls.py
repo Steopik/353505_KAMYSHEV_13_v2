@@ -41,4 +41,9 @@ urlpatterns = [
     
     # API
     path('api/search/', views.api_property_search, name='api_property_search'),
+    path('api/agents/', views.api_agents, name='api_agents'),
+    path('api/properties/', views.api_properties, name='api_properties'),
+
+    # JavaScript задания (ЛР3)
+    path('js-tasks/', views.js_tasks, name='js_tasks'),
 ]

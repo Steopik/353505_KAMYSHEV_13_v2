@@ -597,3 +597,56 @@ def faq_detail(request, pk):
     }
 
     return render(request, 'realty/faq_detail.html', context)
+
+
+def js_tasks(request):
+    """Страница с демонстрацией JavaScript функционала (ЛР3)"""
+    return render(request, 'realty/js_tasks.html')
+
+
+def api_agents(request):
+    """API для получения списка сотрудников (ЛР3, Задание 3)"""
+    agents = Agent.objects.filter(is_active=True).select_related('user')
+
+    data = []
+    for agent in agents:
+        # Получаем URL фото (если есть)
+        photo_url = ''
+        if hasattr(agent.user, 'photo') and agent.user.photo:
+            photo_url = agent.user.photo.url
+
+        data.append({
+            'id': agent.id,
+            'last_name': agent.user.last_name,
+            'first_name': agent.user.first_name,
+            'full_name': f"{agent.user.last_name} {agent.user.first_name}",
+            'email': agent.user.email,
+            'phone': agent.phone,
+            'department': agent.department,
+            'experience': agent.experience_years,
+            'bio': agent.bio or '',
+            'photo': photo_url
+        })
+
+    return JsonResponse({'agents': data})
+
+
+def api_properties(request):
+    """API для получения каталога недвижимости (ЛР3, Задание 5)"""
+    properties = Property.objects.filter(is_available=True).select_related('agent__user').order_by('-created_at')
+
+    data = []
+    for prop in properties:
+        data.append({
+            'id': prop.id,
+            'title': prop.title,
+            'property_type': prop.get_property_type_display(),
+            'price': float(prop.price),
+            'area': float(prop.area),
+            'address': prop.address,
+            'description': (prop.description[:150] + '...') if prop.description and len(prop.description) > 150 else (prop.description or 'Описание отсутствует'),
+            'photo': '',  # Фотографии не используются в этой модели
+            'agent_name': f"{prop.agent.user.last_name} {prop.agent.user.first_name}" if prop.agent else 'Не указан'
+        })
+
+    return JsonResponse({'properties': data})

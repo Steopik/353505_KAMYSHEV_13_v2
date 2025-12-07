@@ -1,32 +1,297 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}Недвижимость{% endblock %}
 
 {% block content %}
 <h1>Объекты недвижимости</h1>
 
-<div class="card">
-    <form method="get" action="">
-        <input type="text" name="q" placeholder="Поиск..." value="{{ query }}">
-        <button type="submit" class="btn">Поиск</button>
-    </form>
+<!-- Панель управления -->
+<div class="catalog-controls">
+    <div id="catalog-info" class="catalog-info">
+        Загрузка...
+    </div>
+    <div class="items-per-page-selector">
+        <label for="items-per-page">Показывать по:</label>
+        <select id="items-per-page">
+            <option value="6" selected>6 объектов</option>
+            <option value="12">12 объектов</option>
+            <option value="24">24 объекта</option>
+        </select>
+    </div>
 </div>
 
-<div class="grid">
-    {% for property in page_obj %}
-    <div class="card">
-        <h3>{{ property.title }}</h3>
-        <p><strong>Тип:</strong> {{ property.get_property_type_display }}</p>
-        <p><strong>Цена:</strong> {{ property.price|floatformat:0 }} BYN</p>
-        <p><strong>Площадь:</strong> {{ property.area }} м²</p>
-        <p><strong>Адрес:</strong> {{ property.address }}</p>
-        <a href="{% url 'realty:property_detail' property.pk %}" class="btn">Подробнее</a>
-        {% if property.is_available %}
-        <a href="{% url 'realty:add_to_cart' property.pk %}" class="btn" style="background-color: #ffc107;">В корзину</a>
-        {% endif %}
-    </div>
-    {% empty %}
-    <p>Нет доступных объектов</p>
-    {% endfor %}
+<!-- Прелоадер -->
+<div id="catalog-loader" class="catalog-loader" style="display: none;">
+    <div class="spinner"></div>
+    <p>Загрузка каталога...</p>
 </div>
+
+<!-- Каталог -->
+<div id="catalog-container" class="catalog-grid">
+    <!-- Карточки добавляются через JavaScript -->
+</div>
+
+<!-- Пагинация -->
+<div id="catalog-pagination" class="catalog-pagination">
+    <!-- Кнопки пагинации добавляются через JavaScript -->
+</div>
+
+<script src="{% static 'js/card-3d-effect.js' %}"></script>
+<script src="{% static 'js/catalog-pagination.js' %}"></script>
+<script>
+    // Инициализация пагинации каталога
+    const catalogPagination = new CatalogPagination({
+        container: '#catalog-container',
+        pagination: '#catalog-pagination',
+        perPageSelector: '#items-per-page'
+    });
+</script>
+
+<style>
+    /* Панель управления */
+    .catalog-controls {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 15px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .catalog-info {
+        font-weight: 500;
+        color: #2c3e50;
+    }
+
+    .items-per-page-selector {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .items-per-page-selector label {
+        font-weight: 500;
+        color: #2c3e50;
+    }
+
+    .items-per-page-selector select {
+        padding: 8px 12px;
+        border: 2px solid #3498db;
+        border-radius: 4px;
+        font-size: 14px;
+        cursor: pointer;
+        background: white;
+    }
+
+    /* Прелоадер */
+    .catalog-loader {
+        text-align: center;
+        padding: 40px 20px;
+    }
+
+    .spinner {
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #3498db;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 15px;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    /* Сетка каталога */
+    .catalog-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+
+    /* Карточки недвижимости */
+    .property-card {
+        background: white;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .property-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    }
+
+    .property-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+    }
+
+    .no-image {
+        width: 100%;
+        height: 200px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 16px;
+        font-weight: 500;
+    }
+
+    .property-info {
+        padding: 15px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .property-info h3 {
+        margin: 0 0 10px 0;
+        color: #2c3e50;
+        font-size: 18px;
+    }
+
+    .property-type {
+        display: inline-block;
+        padding: 4px 10px;
+        background: #e3f2fd;
+        color: #1976d2;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: 500;
+        margin-bottom: 10px;
+        width: fit-content;
+    }
+
+    .property-price {
+        font-size: 20px;
+        font-weight: bold;
+        color: #27ae60;
+        margin: 10px 0;
+    }
+
+    .property-details {
+        display: flex;
+        gap: 15px;
+        margin: 8px 0;
+        color: #7f8c8d;
+        font-size: 14px;
+    }
+
+    .property-address {
+        color: #555;
+        font-size: 14px;
+        margin: 8px 0;
+    }
+
+    .property-description {
+        color: #666;
+        font-size: 13px;
+        line-height: 1.5;
+        margin: 10px 0;
+        flex: 1;
+    }
+
+    .property-agent {
+        color: #7f8c8d;
+        font-size: 13px;
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 1px solid #ecf0f1;
+    }
+
+    /* Пагинация */
+    .catalog-pagination {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 30px;
+    }
+
+    .pagination-btn {
+        padding: 10px 15px;
+        border: 2px solid #3498db;
+        background: white;
+        color: #3498db;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        min-width: 45px;
+    }
+
+    .pagination-btn:hover {
+        background: #3498db;
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(52, 152, 219, 0.3);
+    }
+
+    .pagination-btn.active {
+        background: #3498db;
+        color: white;
+        font-weight: bold;
+        box-shadow: 0 4px 8px rgba(52, 152, 219, 0.3);
+    }
+
+    .pagination-dots {
+        padding: 10px 5px;
+        color: #95a5a6;
+        font-weight: bold;
+        font-size: 16px;
+    }
+
+    /* 3D эффект для карточек */
+    .property-card {
+        position: relative;
+        will-change: transform;
+    }
+
+    .property-card .no-image,
+    .property-card .property-info h3,
+    .property-card .property-price {
+        transition: transform 300ms ease-out;
+    }
+
+    /* Блик */
+    .card-glare {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 300ms ease-out;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    /* Адаптивность */
+    @media (max-width: 768px) {
+        .catalog-controls {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .catalog-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
 {% endblock %}

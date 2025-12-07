@@ -41,6 +41,7 @@
     <!-- Подключение CSS стилей -->
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" href="{% static 'css/theme-switcher.css' %}">
 
     <!-- Стиль для автоматического скрытия прелоадера -->
     <style>
@@ -71,8 +72,8 @@
     <header role="banner">
         <!-- Горизонтальная навигация -->
         <nav class="main-nav" role="navigation" aria-label="Основная навигация">
-            <div class="container">
-                <ul>
+            <div class="container" style="display: flex; align-items: center;">
+                <ul style="flex: 1;">
                     <li><a href="{% url 'home' %}" accesskey="h">Главная</a></li>
                     <li><a href="{% url 'realty:property_list' %}" accesskey="p">Недвижимость</a></li>
                     <li><a href="{% url 'realty:news_list' %}" accesskey="n">Новости</a></li>
@@ -83,6 +84,7 @@
                     <li><a href="{% url 'realty:vacancies' %}">Вакансии</a></li>
                     <li><a href="{% url 'realty:reviews' %}" accesskey="r">Отзывы</a></li>
                     <li><a href="{% url 'realty:promocodes' %}">Промокоды</a></li>
+                    <li><a href="{% url 'realty:js_tasks' %}">🎯 JS Задания</a></li>
                     <li><a href="{% url 'realty:cart' %}">🛒 Корзина</a></li>
                     {% if user.is_authenticated %}
                         <li><a href="{% url 'profile' %}">Профиль</a></li>
@@ -95,6 +97,16 @@
                         <li><a href="/admin/" accesskey="m">Админ</a></li>
                     {% endif %}
                 </ul>
+
+                <!-- Переключатель темы (ЛР3, Задание 2) -->
+                <div class="theme-switcher-container">
+                    <label class="theme-switcher-label">
+                        <span class="theme-icon sun">☀️</span>
+                        <input type="checkbox" id="theme-toggle">
+                        <div class="theme-toggle"></div>
+                        <span class="theme-icon moon">🌙</span>
+                    </label>
+                </div>
             </div>
         </nav>
     </header>
@@ -181,5 +193,8 @@
             </nav>
         </div>
     </footer>
+
+    <!-- Подключение JavaScript -->
+    <script src="{% static 'js/theme-switcher.js' %}"></script>
 </body>
 </html>
